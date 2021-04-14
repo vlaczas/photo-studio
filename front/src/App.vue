@@ -1,30 +1,25 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-    <router-view />
+  <div>
+    <router-view></router-view>
   </div>
 </template>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+@use './assets/css/constants.scss';
+
+.focus-ring {
+  -webkit-tap-highlight-color: transparent;
 }
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.focus-ring:focus:not(:focus-visible) {
+  outline: none;
+  outline-width: 0;
+}
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(95, 105, 255);
+}
+.focus-ring:-moz-focusring {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(95, 105, 255);
 }
 </style>
