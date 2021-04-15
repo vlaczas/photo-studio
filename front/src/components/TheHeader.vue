@@ -3,7 +3,9 @@
     <span class="logo focus-ring">
       P&S
     </span>
-    <base-button>Вход</base-button>
+    <router-link :to="{ name: 'LoginForm' }">
+      <base-button>Вход</base-button>
+    </router-link>
   </header>
 </template>
 

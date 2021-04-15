@@ -5,7 +5,23 @@
 </template>
 
 <style lang="scss">
-@use './assets/css/constants.scss';
+@import './assets/css/constants.scss';
+
+a {
+  text-decoration: none;
+  color: var(--col-fio);
+  font-weight: 700;
+
+  &:visited,
+  &:active {
+    color: var(--col-fio);
+  }
+}
+h1 {
+  font-size: var(--font-h1);
+  font-weight: 800;
+  text-align: center;
+}
 
 .focus-ring {
   -webkit-tap-highlight-color: transparent;

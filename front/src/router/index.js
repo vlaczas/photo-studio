@@ -1,11 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
+import LoginForm from '../views/LoginForm.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Home,
+    children: [
+      {
+        path: 'login',
+        name: 'LoginForm',
+        component: LoginForm,
+      },
+      {
+        path: 'register',
+        name: 'RegisterForm',
+        component: () => import(/* webpackChunkName: "register" */ '../views/RegisterForm.vue'),
+      },
+    ],
   },
   // {
   //   path: '/about',
