@@ -1,8 +1,9 @@
 const ErrorResponse = require('../utils/errorResponse');
-
-const errorHandler = (err, req, res) => {
+/* eslint-disable no-unused-vars */
+const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
+  console.error(error.message);
 
   /**
    * !MONGO duplicate KEY

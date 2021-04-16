@@ -3,14 +3,29 @@
     <span class="logo focus-ring">
       P&S
     </span>
-    <router-link :to="{ name: 'LoginForm' }">
+    <router-link
+      v-if="getUserStatus === false"
+      :to="{ name: 'LoginForm' }"
+    >
       <base-button>Вход</base-button>
+    </router-link>
+    <router-link
+      v-else-if="getUserStatus === true"
+      :to="{ name: 'LoginForm' }"
+    >
+      <base-button>Мой профиль</base-button>
     </router-link>
   </header>
 </template>
 
 <script>
-export default {};
+export default {
+  computed: {
+    getUserStatus() {
+      return this.$store.getters['auth/getUserStatus'];
+    },
+  },
+};
 </script>
 
 <style lang="scss">

@@ -24,20 +24,16 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 130px;
-  max-width: 130px;
+  min-width: 140px;
+  max-width: 140px;
   max-height: 41px;
   min-height: 41px;
   border-radius: 9px;
-  padding: 11px;
-  border-radius: 10px;
   background-color: var(--col-black);
   &:active {
     transform: scale(0.95);
   }
-  &:disabled {
-    background: var(--col-grey);
-  }
+
   &:hover {
     background: var(--back-grad);
   }
@@ -49,6 +45,13 @@ export default {
     color: var(--col-white);
     user-select: none;
     cursor: pointer;
+    padding: 11px;
+    width: 100%;
+
+    &:disabled {
+      background: var(--col-grey);
+      border-radius: 9px;
+    }
 
     &:focus {
       outline: none;

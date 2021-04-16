@@ -16,7 +16,6 @@
         <input
           type="email"
           id="email"
-          autocomplete="email"
           v-model.lazy.trim="email"
         />
         <span
@@ -43,7 +42,7 @@
         <input
           type="password"
           id="Сpassword"
-          v-model.lazy.trim="Cpassword"
+          v-model.trim="Cpassword"
         />
         <span
           v-if="
@@ -60,7 +59,7 @@
         :to="{ name: 'LoginForm' }"
         >Войти в аккаунт</router-link
       >
-      <base-button type="submit" :isLoading="false"
+      <base-button type="submit" :isLoading="isApiCall"
         >Войти</base-button
       >
     </form>
@@ -75,7 +74,8 @@ import {
   sameAs,
   minLength,
 } from '@vuelidate/validators';
-import BaseButton from '../components/UI/BaseButton.vue';
+import BaseButton from '@/components/UI/BaseButton.vue';
+import showNotification from '../hooks/showNotification';
 
 export default {
   components: { BaseButton },
@@ -85,6 +85,7 @@ export default {
       password: '',
       Cpassword: '',
       v$: useVuelidate(),
+      isApiCall: false,
     };
   },
   methods: {
@@ -92,14 +93,26 @@ export default {
       this.$router.push('/');
     },
     submitCreds() {
-      if (this.v$.$invalid) return;
+      if (this.v$.$invalid) {
+        showNotification('Заполните форму правильно 😕');
+        return;
+      }
+      this.isApiCall = true;
       this.$store
         .dispatch('auth/registerUser', {
           email: this.email,
           password: this.password,
         })
-        .then((res) => console.log(res.data.data))
-        .catch((res) => console.error(res.error));
+        .then(() => {
+          showNotification('Добро пожаловать 🎈🎈🎈');
+          this.$router.replace('/');
+        })
+        .catch(() => {
+          showNotification(
+            'Что-то сломалось на нашей стороне 🤦‍♂️',
+          );
+        })
+        .finally(() => (this.isApiCall = false));
     },
   },
   mounted() {
@@ -118,14 +131,20 @@ export default {
         googleBtn,
         {},
         (googleUser) => {
+          this.isApiCall = true;
+
           const token = googleUser.getAuthResponse()
             .id_token;
           this.$store
-            .dispatch('auth/registerUser', { token })
+            .dispatch('auth/loginUser', { token })
             .then(() => this.$router.replace('/'))
             .catch(() => {
-              console.log('Google поломался!');
-            });
+              this.$store.dispatch(
+                'helpers/showNotification',
+                'Google поломался 🤦‍♂️',
+              );
+            })
+            .finally(() => (this.isApiCall = false));
         },
       );
     });

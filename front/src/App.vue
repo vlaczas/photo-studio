@@ -1,8 +1,22 @@
 <template>
   <div>
+    <error-notification></error-notification>
     <router-view></router-view>
   </div>
 </template>
+
+<script>
+import ErrorNotification from '@/components/UI/ErrorNotification.vue';
+
+export default {
+  components: {
+    ErrorNotification,
+  },
+  data() {
+    return {};
+  },
+};
+</script>
 
 <style lang="scss">
 @import './assets/css/constants.scss';

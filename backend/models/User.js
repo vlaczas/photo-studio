@@ -26,9 +26,23 @@ class User {
       : '/img/default-user-icon.png';
 
     userInfo.role = 'user';
-    userInfo.username = Date.now().toString();
-
     return users.insertOne(userInfo);
+  }
+  /**
+   *
+   * @param {Object} query - Object with email or id for User searching
+   * @param {string} query.email - required or
+   * @param {string} query._id - required
+   * @returns {Object} found user
+   */
+
+  static async getUser(query) {
+    const projection = {
+      createdAt: 0,
+      updatedAt: 0,
+      googleId: 0,
+    };
+    return users.findOne(query, projection);
   }
 }
 

@@ -1,6 +1,10 @@
 <template>
   <transition name="modal" mode="out-in">
-    <section v-if="open" class="modal" @click.self="$emit('close-modal')">
+    <section
+      v-if="open"
+      class="modal"
+      @mousedown.self="$emit('close-modal')"
+    >
       <div class="modal-inner">
         <slot></slot>
       </div>

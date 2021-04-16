@@ -34,7 +34,7 @@
         :to="{ name: 'RegisterForm' }"
         >Создать аккаунт</router-link
       >
-      <base-button type="submit" :isLoading="false"
+      <base-button type="submit" :isLoading="isApiCall"
         >Войти</base-button
       >
     </form>
@@ -43,6 +43,7 @@
 
 <script>
 import BaseButton from '../components/UI/BaseButton.vue';
+import showNotification from '../hooks/showNotification';
 
 export default {
   components: { BaseButton },
@@ -50,39 +51,72 @@ export default {
     return {
       email: '',
       password: '',
+      isApiCall: false,
     };
   },
+  emits: ['notification'],
   methods: {
     toggleModal() {
       this.$router.push('/');
     },
     submitCreds() {
-      this.$store.dispatch('auth/loginUser');
+      if (this.password.length < 6) {
+        showNotification('Слишком короткий пароль 👀');
+        return;
+      }
+      this.isApiCall = true;
+      this.$store
+        .dispatch('auth/loginUser', {
+          email: this.email,
+          password: this.password,
+        })
+        .then(() => this.$router.replace('/'))
+        .catch((error) => {
+          if (error.response.status === 400) {
+            showNotification(
+              'Неверный пароль или имейл ⛔',
+            );
+          } else {
+            showNotification(
+              'Что-то сломалось на нашей стороне 🤦‍♂️',
+            );
+          }
+        })
+        .finally(() => (this.isApiCall = false));
     },
   },
   mounted() {
     /* eslint-disable no-undef */
-    // window.googleUser = {};
-    // window.startGoogle = () => {
-    //   gapi.load('auth2', () => {
-    //     const auth2 = gapi.auth2.init({
-    //       client_id:
-    //         '1011107927314-ql5jokbt0f5nktn3mtcnpr6daqj7qk9m.apps.googleusercontent.com',
-    //       cookiepolicy: 'single_host_origin',
-    //     });
-    //     const googleBtn = document.getElementById('googleBtn');
-    //     auth2.attachClickHandler(googleBtn, {}, (googleUser) => {
-    //       const token = googleUser.getAuthResponse().id_token;
-    //       store
-    //         .dispatch('auth/loginUser', token)
-    //         .then(() => router.replace('/'))
-    //         .catch(() => {
-    //           console.log('Google поломался!');
-    //         });
-    //     });
-    //   });
-    // };
-    // window.startGoogle();
+    window.googleUser = {};
+    gapi.load('auth2', () => {
+      const auth2 = gapi.auth2.init({
+        client_id:
+          '1011107927314-ql5jokbt0f5nktn3mtcnpr6daqj7qk9m.apps.googleusercontent.com',
+        cookiepolicy: 'single_host_origin',
+      });
+      const googleBtn = document.getElementById(
+        'googleBtn',
+      );
+      auth2.attachClickHandler(
+        googleBtn,
+        {},
+        (googleUser) => {
+          this.isApiCall = true;
+          const token = googleUser.getAuthResponse()
+            .id_token;
+          this.$store
+            .dispatch('auth/loginUser', { token })
+            .then(() => this.$router.replace('/'))
+            .catch(() => {
+              this.$store.dispatch(
+                'helpers/showNotification',
+                'Google поломался 🤦‍♂️',
+              );
+            })
+            .finally(() => (this.isApiCall = false));
+        },
+      );
+    });
   },
 };
 </script>

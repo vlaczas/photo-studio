@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import store from '../store/index';
 import Home from '../views/Home.vue';
 import LoginForm from '../views/LoginForm.vue';
 
+/* eslint-disable*/
 const routes = [
   {
     path: '/',
@@ -16,23 +18,33 @@ const routes = [
       {
         path: 'register',
         name: 'RegisterForm',
-        component: () => import(/* webpackChunkName: "register" */ '../views/RegisterForm.vue'),
+        component: () =>
+          import(
+            /* webpackChunkName: "register" */ '../views/RegisterForm.vue'
+          ),
       },
     ],
   },
-  // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
-  // },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+//* Get User session
+let isInitialPageLoad = true;
+router.beforeEach((to, from, next) => {
+  if (isInitialPageLoad) {
+    isInitialPageLoad = false;
+    store
+      .dispatch('auth/getMe')
+      .then(() => next())
+      .catch(() => {
+        store.commit('auth/deAnonUser');
+        next('/');
+      });
+  } else next();
 });
 
 export default router;
