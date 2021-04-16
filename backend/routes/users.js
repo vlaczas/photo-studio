@@ -2,6 +2,9 @@ const router = require('express').Router();
 const loginGoogle = require('../middleware/loginGoogle');
 const UsersController = require('../controllers/userController');
 
+//* Route to get a single user via query parameters
+router.route('/').get(UsersController.getSingleUser);
+
 //* Route to register user via Email/PW
 router.route('/register').post(UsersController.createUser);
 

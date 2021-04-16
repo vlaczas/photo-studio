@@ -54,7 +54,6 @@ export default {
       isApiCall: false,
     };
   },
-  emits: ['notification'],
   methods: {
     toggleModal() {
       this.$router.push('/');
@@ -72,9 +71,13 @@ export default {
         })
         .then(() => this.$router.replace('/'))
         .catch((error) => {
-          if (error.response.status === 400) {
+          if (error.response?.status === 400) {
             showNotification(
               'Неверный пароль или имейл ⛔',
+            );
+          } else if (error.response?.status === 403) {
+            showNotification(
+              'Вы регистрировались через Google 🤳',
             );
           } else {
             showNotification(
@@ -181,7 +184,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 40px;
+  height: 45px;
   width: 70%;
   min-width: 230px;
   margin: 0 auto;

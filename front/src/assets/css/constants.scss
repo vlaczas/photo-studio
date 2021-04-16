@@ -1,15 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
 :root {
-  --col-black: rgb(20, 20, 20);
   --col-white: rgb(235, 235, 235);
-  --col-grey: rgb(181, 181, 181);
+  --col-grey: rgb(170, 170, 170);
+  --col-blue: rgb(24, 17, 160);
   --col-black: rgb(22, 22, 22);
-  --col-white: rgb(233, 233, 233);
+  --col-deepBlue: #252b3d;
+  --col-dashBlack: rgb(12, 14, 36);
   --col-fio: rgb(112, 0, 112);
   --col-red: rgb(212, 52, 52);
   --shadow: 0px 5px 8px 0px rgb(0 0 0 / 25%);
-  --font-h1: 1.5rem;
+  --font-h1: 1.4rem;
+  --font-h2: 1.25rem;
+  --font-h3: 1.1rem;
   --font-sm: 0.7rem;
   --back-grad: linear-gradient(21deg, #dd03e4, #5611ec);
 }
@@ -19,8 +22,8 @@
   padding: 0;
   list-style-type: none;
   font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 400;
   box-sizing: border-box;
 
   &::-webkit-scrollbar {

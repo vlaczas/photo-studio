@@ -19,19 +19,18 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .base-btn {
   display: flex;
   justify-content: center;
   align-items: center;
   min-width: 140px;
   max-width: 140px;
-  max-height: 41px;
-  min-height: 41px;
+  min-height: 32px;
   border-radius: 9px;
   background-color: var(--col-black);
   &:active {
-    transform: scale(0.95);
+    transform: scale(0.97);
   }
 
   &:hover {
@@ -45,7 +44,7 @@ export default {
     color: var(--col-white);
     user-select: none;
     cursor: pointer;
-    padding: 11px;
+    padding: 10px 5px;
     width: 100%;
 
     &:disabled {

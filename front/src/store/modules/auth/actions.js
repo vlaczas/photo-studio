@@ -40,4 +40,11 @@ export default {
 
     context.commit('setUser', response.data.data);
   },
+
+  async checkUsername(context, username) {
+    const response = await myAxios.get(
+      `/users?username=${username}&private=true`,
+    );
+    return response;
+  },
 };

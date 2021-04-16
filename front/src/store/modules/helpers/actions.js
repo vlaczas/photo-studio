@@ -6,7 +6,7 @@ export default {
     context.commit('setNotification', message);
     timeout = setTimeout(
       () => context.commit('clearNotification'),
-      4000,
+      3000,
     );
   },
 };

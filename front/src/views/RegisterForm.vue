@@ -1,6 +1,10 @@
 <template>
   <base-modal @close-modal="toggleModal" :open="true">
-    <form class="basic-form" @submit.prevent="submitCreds">
+    <form
+      class="basic-form"
+      @submit.prevent="submitCreds"
+      novalidate
+    >
       <h1 class="basic-form__header">РЕГИСТРАЦИЯ</h1>
       <div
         tabindex="0"
@@ -11,6 +15,42 @@
         <span class="buttonText">Войти через Google</span>
       </div>
       <p>или</p>
+      <div class="basic-form__block">
+        <label for="username">Придумайте имя</label>
+        <div class="checked-input">
+          <span
+            v-if="isFree === false"
+            class="checked-input__checker"
+            >❌</span
+          >
+          <span
+            v-else-if="isFree === true"
+            class="checked-input__checker"
+            >✅</span
+          >
+          <span
+            v-else-if="isApiCall"
+            class="checked-input__checker"
+            ><spinner></spinner
+          ></span>
+          <input
+            @change="checkUsername"
+            type="text"
+            id="username"
+            v-model.trim.lazy="username"
+          />
+        </div>
+        <span
+          v-if="
+            (!v$.username.required.$invalid &&
+              v$.username.isValid.$invalid) ||
+              v$.username.minLength.$invalid
+          "
+          class="basic-form__error-msg"
+          >Разрешены буквы от a-z, _ и точки. Минимум 4
+          символа</span
+        >
+      </div>
       <div class="basic-form__block">
         <label for="email">Электронная почта</label>
         <input
@@ -53,6 +93,7 @@
           >Пароли должны совпадать</span
         >
       </div>
+
       <p>Уже зарегистрированы?</p>
       <router-link
         class="focus-ring"
@@ -60,7 +101,7 @@
         >Войти в аккаунт</router-link
       >
       <base-button type="submit" :isLoading="isApiCall"
-        >Войти</base-button
+        >Регистрация</base-button
       >
     </form>
   </base-modal>
@@ -77,6 +118,9 @@ import {
 import BaseButton from '@/components/UI/BaseButton.vue';
 import showNotification from '../hooks/showNotification';
 
+const regExp = new RegExp('^[a-z_.0-9]+$');
+const isValid = (value) => regExp.test(value);
+
 export default {
   components: { BaseButton },
   data() {
@@ -84,16 +128,44 @@ export default {
       email: '',
       password: '',
       Cpassword: '',
+      username: '',
       v$: useVuelidate(),
       isApiCall: false,
+      isFree: '',
     };
   },
+  computed: {},
   methods: {
+    checkUsername() {
+      if (!this.username || this.v$.username.$invalid) {
+        this.isFree = '';
+        return;
+      }
+      if (!this.v$.username.$invalid) {
+        this.isApiCall = true;
+        this.$store
+          .dispatch('auth/checkUsername', this.username)
+          .then((res) => {
+            if (res.data.success) {
+              this.isFree = false;
+              showNotification('Такое имя уже занято ❌');
+            } else {
+              this.isFree = true;
+            }
+          })
+          .catch(() => {
+            showNotification(
+              'Что-то сломалось на нашей стороне 🤦‍♂️',
+            );
+          })
+          .finally(() => (this.isApiCall = false));
+      }
+    },
     toggleModal() {
       this.$router.push('/');
     },
     submitCreds() {
-      if (this.v$.$invalid) {
+      if (this.v$.$invalid || !this.isFree) {
         showNotification('Заполните форму правильно 😕');
         return;
       }
@@ -102,15 +174,20 @@ export default {
         .dispatch('auth/registerUser', {
           email: this.email,
           password: this.password,
+          username: this.username,
         })
         .then(() => {
           showNotification('Добро пожаловать 🎈🎈🎈');
           this.$router.replace('/');
         })
-        .catch(() => {
-          showNotification(
-            'Что-то сломалось на нашей стороне 🤦‍♂️',
-          );
+        .catch((error) => {
+          if (error.response?.status === 400) {
+            showNotification('Вы уже зарегистрированы  ✔');
+          } else {
+            showNotification(
+              'Что-то сломалось на нашей стороне 🤦‍♂️',
+            );
+          }
         })
         .finally(() => (this.isApiCall = false));
     },
@@ -156,6 +233,11 @@ export default {
       Cpassword: {
         required,
         sameAs: sameAs(this.password),
+      },
+      username: {
+        required,
+        minLength: minLength(4),
+        isValid,
       },
     };
   },

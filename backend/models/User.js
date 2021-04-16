@@ -1,4 +1,6 @@
 // const { ObjectID } = require('mongodb');
+const { nanoid } = require('nanoid');
+const slugify = require('slugify');
 
 //* Connect to the STUDIOS Collection
 let users = null;
@@ -25,6 +27,18 @@ class User {
       ? userInfo.photo
       : '/img/default-user-icon.png';
 
+    //* in case user registered via google and have not username
+    if (!userInfo.username) {
+      userInfo.username = slugify(
+        `${userInfo.firstName} ${userInfo.lastName} ${nanoid(5)}`,
+        {
+          replacement: '_',
+          remove: undefined,
+          lower: true,
+        },
+      );
+    }
+
     userInfo.role = 'user';
     return users.insertOne(userInfo);
   }
@@ -42,7 +56,7 @@ class User {
       updatedAt: 0,
       googleId: 0,
     };
-    return users.findOne(query, projection);
+    return users.findOne(query, { projection });
   }
 }
 

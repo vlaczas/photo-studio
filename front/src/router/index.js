@@ -25,6 +25,37 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: () =>
+      import(
+        /* webpackChunkName: "dashboard" */ '../views/dashboard/Dashboard.vue'
+      ),
+    children: [
+      {
+        path: '',
+        name: 'BookmarkedTab',
+        component: () =>
+          import(
+            /* webpackChunkName: "bookmarkedTab" */ '../views/dashboard/BookmarkedTab.vue'
+          ),
+      },
+      {
+        path: 'settings',
+        name: 'SettingsTab',
+        component: () =>
+          import(
+            /* webpackChunkName: "settingsTab" */ '../views/dashboard/SettingsTab.vue'
+          ),
+      },
+      // {
+      //   path: 'studio',
+      //   name: 'MyStudio',
+      //   component: () => import('../views/Dashboard/Studio.vue')
+      // }
+    ],
+  },
 ];
 
 const router = createRouter({

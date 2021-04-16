@@ -11,7 +11,7 @@
     </router-link>
     <router-link
       v-else-if="getUserStatus === true"
-      :to="{ name: 'LoginForm' }"
+      :to="{ name: 'BookmarkedTab' }"
     >
       <base-button>Мой профиль</base-button>
     </router-link>
