@@ -1,4 +1,4 @@
-// const { ObjectID } = require('mongodb');
+const { ObjectID } = require('mongodb');
 const { nanoid } = require('nanoid');
 const slugify = require('slugify');
 
@@ -57,6 +57,33 @@ class User {
       googleId: 0,
     };
     return users.findOne(query, { projection });
+  }
+
+  /**
+   * @param {object} query - Object with email or id for User searching
+   * @param {string} query._id - required
+   * @param {object} dataToUpdate - object of fields to update
+   * @returns {user} updated user
+   */
+  static async updateUser(query, dataToUpdate) {
+    const filter = { _id: ObjectID(query) };
+
+    const options = {
+      bypassDocumentValidation: true,
+      projection: {
+        createdAt: 0,
+        updatedAt: 0,
+        googleId: 0,
+        password: 0,
+      },
+      returnOriginal: false,
+    };
+
+    const atomData = {
+      $set: dataToUpdate,
+    };
+
+    return users.findOneAndUpdate(filter, atomData, options);
   }
 }
 

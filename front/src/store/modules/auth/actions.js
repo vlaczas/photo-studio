@@ -47,4 +47,16 @@ export default {
     );
     return response;
   },
+
+  async setAvatar(context, formData) {
+    const userId = context.getters.getUserId;
+
+    const response = await myAxios.put(
+      `/users?_id=${userId}`,
+      formData,
+    );
+
+    context.commit('setUser', response.data.data);
+    return response;
+  },
 };

@@ -1,9 +1,24 @@
 const router = require('express').Router();
+const multer = require('multer');
 const loginGoogle = require('../middleware/loginGoogle');
 const UsersController = require('../controllers/userController');
+const protect = require('../middleware/protect');
+const imageUploader = require('../middleware/uploadImg');
 
-//* Route to get a single user via query parameters
-router.route('/').get(UsersController.getSingleUser);
+const imgUploader = multer();
+
+router
+  .route('/')
+  //* Route to GET a single user via query parameters
+  .get(UsersController.getSingleUser)
+  //* Route to UPDATE a single user via query parameters
+  //! Protected
+  .put(
+    protect,
+    imgUploader.array('photos', 4),
+    imageUploader('photo', 'usersAvatars', { isUniqueName: true }),
+    UsersController.updateUser,
+  );
 
 //* Route to register user via Email/PW
 router.route('/register').post(UsersController.createUser);

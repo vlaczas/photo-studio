@@ -165,7 +165,7 @@ export default {
   background-color: var(--col-dashBlack);
   width: 100%;
   height: 100vh;
-  z-index: -1;
+  z-index: 0;
 }
 @media (min-width: 768px) {
   .dashboard__left-nav {

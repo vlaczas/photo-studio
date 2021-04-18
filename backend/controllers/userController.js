@@ -76,6 +76,28 @@ class UsersController {
   }
 
   /**
+  @desc Update a user via query parameters - can contain .file
+   */
+  static async updateUser(req, res, next) {
+    try {
+      const { _id: query } = req.query;
+      const dataToUpdate = req.body;
+
+      let errorUploads;
+      if (dataToUpdate.errorUploads) {
+        errorUploads = dataToUpdate.errorUploads;
+      }
+      delete dataToUpdate.errorUploads;
+      const { value: updatedUser } = await User.updateUser(query, dataToUpdate);
+
+      req.session.user = updatedUser;
+      res.status(200).json({ success: true, data: updatedUser, errorUploads });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * @desc Get a session of a user
    * @returns {Object} - user session
    */

@@ -26,7 +26,8 @@ export default {
   align-items: center;
   min-width: 140px;
   max-width: 140px;
-  min-height: 32px;
+  min-height: 38px;
+  max-height: 38px;
   border-radius: 9px;
   background-color: var(--col-black);
   &:active {

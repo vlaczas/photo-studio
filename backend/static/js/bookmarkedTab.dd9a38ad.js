@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["bookmarkedTab"],{b6e8:function(e,n,o){"use strict";o.r(n);var a=o("7a23");function r(e,n,o,r,t,b){return Object(a["u"])(),Object(a["d"])("section",null,"BookmarkedTab")}var t={};t.render=r;n["default"]=t}}]);
+//# sourceMappingURL=bookmarkedTab.dd9a38ad.js.map

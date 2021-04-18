@@ -17,5 +17,7 @@ module.exports = {
         ? 'warn'
         : 'off',
     'no-return-assign': ['warn', 'except-parens'],
+    'max-len': 'off',
+    'no-underscore-dangle': 'off',
   },
 };

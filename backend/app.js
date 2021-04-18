@@ -3,6 +3,7 @@ const cors = require('cors');
 const express = require('express');
 const session = require('express-session');
 require('dotenv').config();
+const morgan = require('morgan');
 const { connectDB } = require('./configs/db');
 const routerUsers = require('./routes/users');
 const errorHandler = require('./middleware/error');
@@ -17,7 +18,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: ['http://localhost:5000', 'https://studio-search.herokuapp.com/'],
+    origin: ['http://localhost:5000', 'http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     credentials: true,
@@ -53,15 +54,12 @@ app.use(
 app.use(express.static(path.join(__dirname, 'static')));
 
 // dev logging middleware
-if (process.env.NODE_ENV !== 'production') {
-  const morgan = require('morgan');
-  app.use(morgan('dev'));
-}
+app.use(morgan('dev'));
 
 //* Use routs
 app.use('/api/v1/users', routerUsers);
 app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'backend/static/index.html'));
+  res.sendFile(path.join(__dirname, 'static/index.html'));
 });
 
 /**
@@ -71,7 +69,7 @@ app.use(errorHandler);
 
 // Listen the server
 const server = app.listen(port, '0.0.0.0');
-console.log('Server listening on `localhost:' + port);
+console.log(`Server listening on localhost:${port}`);
 
 /**
  * ! Handle exit

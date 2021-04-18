@@ -111,10 +111,7 @@ export default {
             .dispatch('auth/loginUser', { token })
             .then(() => this.$router.replace('/'))
             .catch(() => {
-              this.$store.dispatch(
-                'helpers/showNotification',
-                'Google поломался 🤦‍♂️',
-              );
+              showNotification('Google поломался 🤦‍♂️');
             })
             .finally(() => (this.isApiCall = false));
         },
@@ -169,6 +166,7 @@ export default {
   & input {
     width: 70%;
     padding: 5px;
+    border: 2px solid var(--col-grey);
     border-top: none;
     border-right: none;
     border-left: none;

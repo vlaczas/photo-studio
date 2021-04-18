@@ -36,8 +36,12 @@ export default {
   left: -150px;
   right: -150px;
   background-color: rgba($color: #000000, $alpha: 0.4);
+  z-index: 100;
 }
-
+.modal-inner {
+  background-color: var(--col-white);
+  border-radius: 20px;
+}
 .modal-enter-from,
 .modal-leave-to {
   opacity: 0;

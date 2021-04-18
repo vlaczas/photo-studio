@@ -5,7 +5,7 @@ let baseURL;
 if (process.env.NODE_ENV === 'development') {
   baseURL = 'http://localhost:3000/api/v1';
 } else {
-  baseURL = 'https://studio-search.herokuapp.com/api/v1';
+  baseURL = 'https://photo-studios.herokuapp.com/api/v1';
 }
 
 const myAxios = axios.create({

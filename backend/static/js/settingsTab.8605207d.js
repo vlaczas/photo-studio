@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["settingsTab"],{"443f":function(n,t,e){"use strict";e.r(t);var s=e("7a23");function a(n,t,e,a,c,i){return Object(s["u"])(),Object(s["d"])("section",null,"SettingsTab")}var c={};c.render=a;t["default"]=c}}]);
+//# sourceMappingURL=settingsTab.8605207d.js.map
