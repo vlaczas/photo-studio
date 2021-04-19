@@ -1,7 +1,11 @@
 <template>
-  <div tabindex="0" class="base-btn focus-ring">
+  <div
+    tabindex="0"
+    class="base-btn focus-ring"
+    :class="color"
+  >
     <spinner v-if="isLoading"></spinner>
-    <button tabindex="-1" v-else>
+    <button :class="color" tabindex="-1" v-else>
       <slot></slot>
     </button>
   </div>
@@ -14,6 +18,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    color: {
+      type: String,
+      required: false,
+      default: 'black',
     },
   },
 };
@@ -40,9 +49,10 @@ export default {
   cursor: pointer;
 
   & button {
+    font-weight: 600;
+    color: var(--col-white);
     border: none;
     background-color: transparent;
-    color: var(--col-white);
     user-select: none;
     cursor: pointer;
     padding: 10px 5px;
@@ -57,5 +67,13 @@ export default {
       outline: none;
     }
   }
+}
+.white {
+  background-color: var(--col-white);
+  color: var(--col-black) !important;
+}
+.black {
+  background-color: var(--col-black);
+  color: var(--col-white);
 }
 </style>

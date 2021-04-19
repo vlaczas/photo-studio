@@ -24,7 +24,7 @@ export default {
 a {
   text-decoration: none;
   color: var(--col-fio);
-  font-weight: 700;
+  font-weight: 800;
 
   &:visited,
   &:active {
@@ -51,26 +51,6 @@ h1 {
 .focus-ring:-moz-focusring {
   outline: none;
   box-shadow: 0 0 0 3px rgb(95, 105, 255);
-}
-
-.checked-input {
-  width: 100%;
-  position: relative;
-
-  & input {
-    display: block;
-    margin: 0 auto;
-  }
-
-  &__checker {
-    position: absolute;
-    width: 30px;
-    aspect-ratio: 1 / 1;
-    right: 15%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
 }
 
 /* ANIMATIONS */

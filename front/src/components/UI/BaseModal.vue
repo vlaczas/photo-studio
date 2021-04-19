@@ -40,7 +40,7 @@ export default {
 }
 .modal-inner {
   background-color: var(--col-white);
-  border-radius: 20px;
+  border-radius: 10px;
 }
 .modal-enter-from,
 .modal-leave-to {

@@ -24,6 +24,7 @@
         <label for="password">Пароль</label>
         <input
           type="password"
+          autocomplete="current-password"
           id="password"
           v-model="password"
         />

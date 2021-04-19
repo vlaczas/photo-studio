@@ -44,7 +44,7 @@ export default {
   box-shadow: var(--shadow);
   background: rgba(48, 48, 48, 0.8);
   padding: 10px;
-  z-index: 11;
+  z-index: 101;
   user-select: none;
 }
 

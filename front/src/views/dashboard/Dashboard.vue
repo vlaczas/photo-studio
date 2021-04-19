@@ -74,11 +74,25 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .dashboard {
   display: flex;
   color: var(--col-white);
+
+  &__header {
+    margin-top: 30px;
+  }
+
+  .basic-form {
+    background-color: transparent;
+
+    input {
+      background-color: transparent;
+      color: var(--col-white);
+    }
+  }
 }
+
 .dashboard__left-nav {
   display: flex;
   position: absolute;
@@ -88,6 +102,31 @@ export default {
   background-color: var(--col-deepBlue);
   z-index: 1;
   transition: all 0.3s ease;
+
+  ul {
+    li {
+      display: flex;
+      align-items: center;
+      padding: 15px 0 15px 40px;
+      font-weight: 800;
+      color: var(--col-white);
+
+      &:hover {
+        background: var(--col-blue);
+        background: linear-gradient(
+          90deg,
+          rgba(27, 16, 222, 0.2) 0%,
+          rgba(27, 16, 222, 0.1) 40%,
+          rgba(27, 16, 222, 0.05) 80%
+        );
+      }
+
+      img {
+        width: 30px;
+        margin-right: 20px;
+      }
+    }
+  }
 
   .nav-arrow {
     position: absolute;
@@ -111,30 +150,6 @@ export default {
     background-color: var(--col-blue);
     width: 10px;
     height: 60px;
-  }
-  ul {
-    li {
-      display: flex;
-      align-items: center;
-      padding: 15px 0 15px 40px;
-      font-weight: 700;
-      color: var(--col-white);
-
-      &:hover {
-        background: var(--col-blue);
-        background: linear-gradient(
-          90deg,
-          rgba(27, 16, 222, 0.2) 0%,
-          rgba(27, 16, 222, 0.1) 40%,
-          rgba(27, 16, 222, 0.05) 80%
-        );
-      }
-
-      img {
-        width: 30px;
-        margin-right: 20px;
-      }
-    }
   }
 }
 
@@ -162,10 +177,13 @@ export default {
 }
 
 .dashboard__tab {
+  display: flex;
+  flex-direction: column;
   background-color: var(--col-dashBlack);
   width: 100%;
   height: 100vh;
   z-index: 0;
+  overflow-y: auto;
 }
 @media (min-width: 768px) {
   .dashboard__left-nav {

@@ -17,29 +17,18 @@
       <p>или</p>
       <div class="basic-form__block">
         <label for="username">Придумайте имя</label>
-        <div class="checked-input">
-          <span
-            v-if="isFree === false"
-            class="checked-input__checker"
-            >❌</span
-          >
-          <span
-            v-else-if="isFree === true"
-            class="checked-input__checker"
-            >✅</span
-          >
-          <span
-            v-else-if="isApiCall"
-            class="checked-input__checker"
-            ><spinner></spinner
-          ></span>
-          <input
-            @change="checkUsername"
-            type="text"
-            id="username"
-            v-model.trim.lazy="username"
-          />
-        </div>
+        <input
+          type="text"
+          id="username"
+          v-model.trim.lazy="username"
+          autocomplete="username"
+        />
+        <check-input
+          @check-result="checkResult($event)"
+          :inputText="username"
+          :isInvalidUsername="v$.username.$invalid"
+          actionName="auth/checkUsername"
+        ></check-input>
         <span
           v-if="
             (!v$.username.required.$invalid &&
@@ -55,6 +44,7 @@
         <label for="email">Электронная почта</label>
         <input
           type="email"
+          autocomplete="email"
           id="email"
           v-model.lazy.trim="email"
         />
@@ -69,12 +59,16 @@
         <input
           type="password"
           id="password"
+          autocomplete="new-password"
           v-model.trim.lazy="password"
         />
         <span
-          v-if="v$.password.minLength.$invalid"
+          v-if="
+            v$.password.minLength.$invalid ||
+              v$.password.alphaNum.$invalid
+          "
           class="basic-form__error-msg"
-          >Пароль должен быть минимум 6 символов</span
+          >Mинимум 6 символов, латинские буквы и цифры</span
         >
       </div>
       <div class="basic-form__block">
@@ -114,52 +108,30 @@ import {
   email,
   sameAs,
   minLength,
+  alphaNum,
 } from '@vuelidate/validators';
-import BaseButton from '@/components/UI/BaseButton.vue';
 import showNotification from '../hooks/showNotification';
+import CheckInput from '../components/UI/checkInput.vue';
 
 const regExp = new RegExp('^[a-z_.0-9]+$');
 const isValid = (value) => regExp.test(value);
 
 export default {
-  components: { BaseButton },
+  components: { CheckInput },
   data() {
     return {
       email: '',
       password: '',
       Cpassword: '',
       username: '',
+      isFree: false,
       v$: useVuelidate(),
       isApiCall: false,
-      isFree: '',
     };
   },
-  computed: {},
   methods: {
-    checkUsername() {
-      if (!this.username || this.v$.username.$invalid) {
-        this.isFree = '';
-        return;
-      }
-      if (!this.v$.username.$invalid) {
-        this.isApiCall = true;
-        this.$store
-          .dispatch('auth/checkUsername', this.username)
-          .then((res) => {
-            if (res.data.success) {
-              this.isFree = false;
-              showNotification('Такое имя уже занято ❌');
-            } else {
-              this.isFree = true;
-            }
-          })
-          .catch(() => {
-            showNotification(
-              'Что-то сломалось на нашей стороне 🤦‍♂️',
-            );
-          })
-          .finally(() => (this.isApiCall = false));
-      }
+    checkResult(event) {
+      this.isFree = event;
     },
     toggleModal() {
       this.$router.push('/');
@@ -229,7 +201,11 @@ export default {
   validations() {
     return {
       email: { required, email },
-      password: { required, minLength: minLength(6) },
+      password: {
+        required,
+        minLength: minLength(6),
+        alphaNum,
+      },
       Cpassword: {
         required,
         sameAs: sameAs(this.password),

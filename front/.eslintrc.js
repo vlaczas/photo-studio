@@ -19,5 +19,6 @@ module.exports = {
     'no-return-assign': ['warn', 'except-parens'],
     'max-len': 'off',
     'no-underscore-dangle': 'off',
+    'operator-linebreak': ['error', 'after'],
   },
 };

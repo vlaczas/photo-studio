@@ -54,7 +54,6 @@ class User {
     const projection = {
       createdAt: 0,
       updatedAt: 0,
-      googleId: 0,
     };
     return users.findOne(query, { projection });
   }
@@ -73,7 +72,6 @@ class User {
       projection: {
         createdAt: 0,
         updatedAt: 0,
-        googleId: 0,
         password: 0,
       },
       returnOriginal: false,
