@@ -3,6 +3,7 @@ const multer = require('multer');
 const loginGoogle = require('../middleware/loginGoogle');
 const UsersController = require('../controllers/userController');
 const protect = require('../middleware/protect');
+const updateUserSetting = require('../middleware/updateUserSetting');
 const imageUploader = require('../middleware/uploadImg');
 
 const imgUploader = multer();
@@ -19,6 +20,11 @@ router
     imageUploader('photo', 'usersAvatars', { isUniqueName: true }),
     UsersController.updateUser,
   );
+
+//* Route to update user core settings from settings tab
+router
+  .route('/settings')
+  .put(protect, updateUserSetting, UsersController.updateUser);
 
 //* Route to register user via Email/PW
 router.route('/register').post(UsersController.createUser);

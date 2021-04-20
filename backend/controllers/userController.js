@@ -22,7 +22,7 @@ class UsersController {
         ops: [newUser],
       } = await User.createUser(newUserData);
 
-      req.session.user = newUser;
+      req.session.user = { ...newUser };
 
       delete newUser.password;
       delete newUser.createdAt;
@@ -61,14 +61,13 @@ class UsersController {
         return next(new ErrorResponse('User was registered via Google', 403));
       }
 
-      req.session.user = foundUser;
+      req.session.user = { ...foundUser };
 
-      //* if user was registred via email/pw
-      if (!req.body.googleId) {
+      //* if user logging in via email/pw
+      if (!req.query.token) {
         await comparePasswords(req);
         delete foundUser.password;
       }
-
       res.status(200).json({ success: true, data: foundUser });
     } catch (error) {
       next(error);
@@ -82,15 +81,25 @@ class UsersController {
     try {
       const { _id: query } = req.query;
       const dataToUpdate = req.body;
+      const { deleteFields: dataToDelete } = req.body;
+      delete dataToUpdate.deleteFields;
+
+      console.log(dataToDelete);
 
       let errorUploads;
       if (dataToUpdate.errorUploads) {
         errorUploads = dataToUpdate.errorUploads;
       }
       delete dataToUpdate.errorUploads;
-      const { value: updatedUser } = await User.updateUser(query, dataToUpdate);
+      const { value: updatedUser } = await User.updateUser(
+        query,
+        dataToUpdate,
+        dataToDelete,
+      );
 
-      req.session.user = updatedUser;
+      req.session.user = { ...updatedUser };
+      delete updatedUser.password;
+
       res.status(200).json({ success: true, data: updatedUser, errorUploads });
     } catch (error) {
       next(error);
@@ -107,7 +116,10 @@ class UsersController {
         return next(new ErrorResponse("User doesn't log in", 401));
       }
 
-      res.status(200).json({ success: true, data: req.session.user });
+      const userData = { ...req.session.user };
+      delete userData.password;
+
+      res.status(200).json({ success: true, data: userData });
     } catch (error) {
       next(error);
     }

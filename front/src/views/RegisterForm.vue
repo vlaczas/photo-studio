@@ -16,15 +16,14 @@
       </div>
       <p>или</p>
       <div class="basic-form__block">
-        <label for="username">Придумайте имя</label>
+        <label for="username">Никнейм</label>
         <input
           type="text"
           id="username"
           v-model.trim.lazy="username"
-          autocomplete="username"
         />
         <check-input
-          @check-result="checkResult($event)"
+          @check-result="isFree = $event"
           :inputText="username"
           :isInvalidUsername="v$.username.$invalid"
           actionName="auth/checkUsername"
@@ -130,9 +129,6 @@ export default {
     };
   },
   methods: {
-    checkResult(event) {
-      this.isFree = event;
-    },
     toggleModal() {
       this.$router.push('/');
     },

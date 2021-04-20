@@ -35,6 +35,20 @@ export default {
     return response;
   },
 
+  async updateUser(context, dataToUpdate) {
+    const { _id: userId } = dataToUpdate;
+    const dataToSend = { ...dataToUpdate };
+    delete dataToSend._id;
+
+    const response = await myAxios.put(
+      `/users/settings?_id=${userId}`,
+      dataToSend,
+    );
+
+    context.commit('setUser', response.data.data);
+    return response;
+  },
+
   async getMe(context) {
     const response = await myAxios.get('/users/me');
 

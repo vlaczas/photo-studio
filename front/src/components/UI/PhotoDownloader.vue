@@ -83,7 +83,7 @@ export default {
             this.$emit('image-uploaded');
           })
           .catch((err) => {
-            if (err.code === 400) {
+            if (err.response?.status === 400) {
               showNotification(
                 'Выберите картинку в правильном формате и до 5МБ 🙏',
               );

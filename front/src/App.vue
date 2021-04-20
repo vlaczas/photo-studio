@@ -37,6 +37,21 @@ h1 {
   text-align: center;
 }
 
+.closer {
+  font-size: var(--font-h2);
+  font-weight: 800;
+  position: absolute;
+  top: -12px;
+  right: -7px;
+  background-color: var(--col-deepBlue);
+  user-select: none;
+  cursor: pointer;
+  border: solid white 1px;
+  border-radius: 50%;
+  width: 35px;
+  padding: 5px;
+}
+
 .focus-ring {
   -webkit-tap-highlight-color: transparent;
 }

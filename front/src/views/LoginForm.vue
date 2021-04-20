@@ -2,23 +2,14 @@
   <base-modal @close-modal="toggleModal" :open="true">
     <form class="basic-form" @submit.prevent="submitCreds">
       <h1 class="basic-form__header">ВХОД</h1>
-      <div
-        tabindex="0"
-        id="googleBtn"
-        class="customGPlusSignIn focus-ring"
-      >
+      <div tabindex="0" id="googleBtn" class="customGPlusSignIn focus-ring">
         <span class="g-icon"></span>
         <span class="buttonText">Войти через Google</span>
       </div>
       <p>или</p>
       <div class="basic-form__block">
         <label for="email">Электронная почта</label>
-        <input
-          type="email"
-          id="email"
-          autocomplete="email"
-          v-model="email"
-        />
+        <input type="email" id="email" autocomplete="email" v-model="email" />
       </div>
       <div class="basic-form__block">
         <label for="password">Пароль</label>
@@ -30,14 +21,10 @@
         />
       </div>
       <p>Еще не зарегистрированы?</p>
-      <router-link
-        class="focus-ring"
-        :to="{ name: 'RegisterForm' }"
+      <router-link class="focus-ring" :to="{ name: 'RegisterForm' }"
         >Создать аккаунт</router-link
       >
-      <base-button type="submit" :isLoading="isApiCall"
-        >Войти</base-button
-      >
+      <base-button type="submit" :isLoading="isApiCall">Войти</base-button>
     </form>
   </base-modal>
 </template>
@@ -73,17 +60,11 @@ export default {
         .then(() => this.$router.replace('/'))
         .catch((error) => {
           if (error.response?.status === 400) {
-            showNotification(
-              'Неверный пароль или имейл ⛔',
-            );
+            showNotification('Неверный пароль или имейл ⛔');
           } else if (error.response?.status === 403) {
-            showNotification(
-              'Вы регистрировались через Google 🤳',
-            );
+            showNotification('Вы регистрировались через Google 🤳');
           } else {
-            showNotification(
-              'Что-то сломалось на нашей стороне 🤦‍♂️',
-            );
+            showNotification('Что-то сломалось на нашей стороне 🤦‍♂️');
           }
         })
         .finally(() => (this.isApiCall = false));
@@ -98,25 +79,18 @@ export default {
           '1011107927314-ql5jokbt0f5nktn3mtcnpr6daqj7qk9m.apps.googleusercontent.com',
         cookiepolicy: 'single_host_origin',
       });
-      const googleBtn = document.getElementById(
-        'googleBtn',
-      );
-      auth2.attachClickHandler(
-        googleBtn,
-        {},
-        (googleUser) => {
-          this.isApiCall = true;
-          const token = googleUser.getAuthResponse()
-            .id_token;
-          this.$store
-            .dispatch('auth/loginUser', { token })
-            .then(() => this.$router.replace('/'))
-            .catch(() => {
-              showNotification('Google поломался 🤦‍♂️');
-            })
-            .finally(() => (this.isApiCall = false));
-        },
-      );
+      const googleBtn = document.getElementById('googleBtn');
+      auth2.attachClickHandler(googleBtn, {}, (googleUser) => {
+        this.isApiCall = true;
+        const token = googleUser.getAuthResponse().id_token;
+        this.$store
+          .dispatch('auth/loginUser', { token })
+          .then(() => this.$router.replace('/'))
+          .catch(() => {
+            showNotification('Google поломался 🤦‍♂️');
+          })
+          .finally(() => (this.isApiCall = false));
+      });
     });
   },
 };
@@ -129,8 +103,6 @@ export default {
   padding: 25px;
   display: flex;
   flex-direction: column;
-  max-height: 80vh;
-  overflow: auto;
 
   &__header {
     margin: 25px auto;
@@ -157,12 +129,29 @@ export default {
     bottom: -12px;
   }
 }
+
+.basic-form__warning {
+  color: var(--col-black);
+  text-align: center;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  width: 70%;
+  margin: 7px 0;
+  background-color: rgb(184, 175, 3);
+  border-radius: 5px;
+  padding: 8px 5px;
+}
+
 .basic-form__block {
   display: flex;
   position: relative;
   flex-direction: column;
   align-items: center;
   margin-bottom: 25px;
+
+  label {
+    font-weight: 600;
+  }
 
   & input {
     width: 70%;
@@ -201,8 +190,7 @@ span.buttonText {
   text-align: center;
 }
 span.g-icon {
-  background: url('/img/g-normal.png') transparent 0 50%
-    no-repeat;
+  background: url('/img/g-normal.png') transparent 0 50% no-repeat;
   background-size: 36px;
   width: 36px;
   height: 36px;
@@ -210,13 +198,14 @@ span.g-icon {
 }
 @media (min-width: 768px) {
   .basic-form {
-    width: 60vw;
+    width: 60vw !important;
+    margin: 0 auto;
     border-radius: 20px;
   }
 }
-@media (min-width: 1367px) {
+@media (min-width: 1366px) {
   .basic-form {
-    width: 30vw;
+    width: 35vw !important  ;
   }
 }
 </style>

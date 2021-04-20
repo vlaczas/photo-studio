@@ -23,11 +23,12 @@ class User {
     //* set up current Date UTC
     userInfo.createdAt = new Date();
     userInfo.updatedAt = userInfo.createdAt;
+    userInfo.hasPassword = true;
     userInfo.photo = userInfo.photo
       ? userInfo.photo
       : '/img/default-user-icon.png';
 
-    //* in case user registered via google and have not username
+    //* in case user registered via google and have not username and password
     if (!userInfo.username) {
       userInfo.username = slugify(
         `${userInfo.firstName} ${userInfo.lastName} ${nanoid(5)}`,
@@ -37,6 +38,7 @@ class User {
           lower: true,
         },
       );
+      userInfo.hasPassword = false;
     }
 
     userInfo.role = 'user';
@@ -64,7 +66,7 @@ class User {
    * @param {object} dataToUpdate - object of fields to update
    * @returns {user} updated user
    */
-  static async updateUser(query, dataToUpdate) {
+  static async updateUser(query, dataToUpdate, dataToDelete) {
     const filter = { _id: ObjectID(query) };
 
     const options = {
@@ -72,13 +74,14 @@ class User {
       projection: {
         createdAt: 0,
         updatedAt: 0,
-        password: 0,
       },
       returnOriginal: false,
+      ignoreUndefined: true,
     };
-
+    console.log(dataToDelete);
     const atomData = {
       $set: dataToUpdate,
+      $unset: dataToDelete,
     };
 
     return users.findOneAndUpdate(filter, atomData, options);

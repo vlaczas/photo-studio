@@ -19,7 +19,6 @@ exports.comparePasswords = async (req) => {
     req.session.user.password,
   );
   if (!result) {
-    await req.session.destroy();
     throw new ErrorResponse('Incorrect password', 400);
   }
 };

@@ -2,7 +2,7 @@
   <section>
     <h1 class="dashboard__header">Настройки</h1>
     <div class="settings-tab">
-      <div>
+      <div class="settings-section">
         <figure class="add-photo">
           <div
             class="add-photo__btn focus-ring"
@@ -28,27 +28,63 @@
             alt="Ваша фото"
           />
         </figure>
-        <base-modal
-          @close-modal="openPhotoDown = false"
-          :open="openPhotoDown"
-        >
+        <base-modal @close-modal="openPhotoDown = false" :open="openPhotoDown">
           <photo-downloader
             @image-uploaded="openPhotoDown = false"
             :srcPhoto="srcPhoto"
             :dispatchPath="'auth/setAvatar'"
           ></photo-downloader>
         </base-modal>
+        <div v-if="userState.role !== 'user'" class="additional-details">
+          <form @submit.prevent class="basic-form" novalidate>
+            <div class="basic-form__block">
+              <label for="firstName">Имя</label>
+              <input
+                type="text"
+                id="firstName"
+                v-model.trim.lazy="user.firstName"
+                autocomplete="given-name"
+              />
+              <span
+                v-if="
+                  v$.user.firstName.isName.$invalid ||
+                    v$.user.firstName.minLength.$invalid
+                "
+                class="basic-form__error-msg"
+                >Введите настоящее имя</span
+              >
+            </div>
+            <div class="basic-form__block">
+              <label for="lastName">Фамилия</label>
+              <input
+                type="text"
+                id="lastName"
+                v-model.trim.lazy="user.lastName"
+                autocomplete="family-name"
+              />
+              <span
+                v-if="
+                  v$.user.lastName.isName.$invalid ||
+                    v$.user.lastName.minLength.$invalid
+                "
+                class="basic-form__error-msg"
+                >Введите настоящую фамилию</span
+              >
+            </div>
+          </form>
+        </div>
       </div>
-      <div>
-        <form class="basic-form" @submit.prevent novalidate>
+      <div class="settings-section">
+        <form class="basic-form" @submit.prevent="updateUser" novalidate>
           <div class="basic-form__block">
-            <label for="username">Имя</label>
+            <label for="username">Никнейм</label>
             <input
               type="text"
               id="username"
               v-model.trim.lazy="user.username"
             />
             <check-input
+              @check-result="isFree = $event"
               :inputText="user.username"
               :isInvalidUsername="v$.user.username.$invalid"
               actionName="auth/checkUsername"
@@ -60,16 +96,17 @@
                   v$.user.username.minLength.$invalid
               "
               class="basic-form__error-msg"
-              >Разрешены буквы от a-z, _ и точки. Минимум 4
-              символа</span
+              >Разрешены буквы от a-z, _ и точки. Минимум 4 символа</span
             >
           </div>
 
-          <div
-            v-if="!user.googleId"
-            class="basic-form__block"
-          >
+          <div class="basic-form__block">
             <label for="email">Электронная почта</label>
+            <span v-if="userState.googleId" class="basic-form__warning">
+              ❗❗ Ваш аккаунт связан с Google. В случае изменения имейла, связь
+              с Google будет утрачена. <br /><br />💡 Чтобы позже войти в этот
+              аккаунт используйте пароль или гугл с новым имейлом!
+            </span>
             <input
               type="email"
               id="email"
@@ -79,22 +116,17 @@
             <span
               v-if="v$.user.email.email.$invalid"
               class="basic-form__error-msg"
-              >Введит настоящий имейл</span
+              >Введите настоящий имейл</span
             >
           </div>
 
-          <div
-            v-if="!user.googleId"
-            class="basic-form__block"
-          >
-            <label for="currentPassword"
-              >Введите старый пароль</label
-            >
+          <div v-if="userState.hasPassword" class="basic-form__block">
+            <label for="password">Введите текущий пароль</label>
             <input
               type="password"
-              id="currentPassword"
+              id="password"
               autocomplete="current-password"
-              v-model.trim.lazy="user.currentPassword"
+              v-model.trim.lazy="user.password"
             />
           </div>
 
@@ -112,8 +144,7 @@
                   v$.user.newPassword.minLength.$invalid
               "
               class="basic-form__error-msg"
-              >Mинимум 6 символов, латинские буквы и
-              цифры</span
+              >Mинимум 6 символов, латинские буквы и цифры</span
             >
           </div>
           <base-button :isLoading="isApiCall" color="white"
@@ -128,16 +159,14 @@
 <script>
 import showNotification from '@/hooks/showNotification';
 import useVuelidate from '@vuelidate/core';
-import {
-  email,
-  minLength,
-  alphaNum,
-} from '@vuelidate/validators';
+import { email, minLength, alphaNum } from '@vuelidate/validators';
 import PhotoDownloader from '@/components/UI/PhotoDownloader.vue';
 import CheckInput from '@/components/UI/checkInput.vue';
 
 const regExp = new RegExp('^[a-z_.0-9]+$');
 const isValid = (value) => regExp.test(value);
+const isNameReg = new RegExp("^[а-яА-ЯёЁЇїЄєІіa-zA-Z'‎’]+$");
+const isName = (value) => isNameReg.test(value);
 
 export default {
   components: {
@@ -151,6 +180,8 @@ export default {
       isApiCall: false,
       v$: useVuelidate(),
       user: null,
+      initUsername: '',
+      isFree: true,
     };
   },
   computed: {
@@ -163,21 +194,82 @@ export default {
     this.initUsername = this.user.username;
   },
   methods: {
+    updateUser() {
+      if (this.v$.$invalid || !this.isFree) {
+        showNotification('Заполните форму правильно 😕');
+        return;
+      }
+      if (
+        this.user.newPassword &&
+        !this.user.password &&
+        this.user.hasPassword
+      ) {
+        showNotification('Нужно ввести текущий пароль 🔑');
+        return;
+      }
+      if (!this.user.newPassword && this.user.password) {
+        return;
+      }
+      this.isApiCall = true;
+
+      const dataToChange = {};
+      let needsGoogleLogOut = false;
+
+      if (this.user.email !== this.userState.email) {
+        dataToChange.email = this.user.email;
+        if (this.userState.googleId) {
+          needsGoogleLogOut = true;
+        }
+      }
+      if (this.user.newPassword && this.user.password) {
+        dataToChange.password = this.user.password;
+        dataToChange.newPassword = this.user.newPassword;
+      } else if (this.user.newPassword && !this.userState.hasPassword) {
+        dataToChange.newPassword = this.user.newPassword;
+      }
+
+      if (this.user.username !== this.userState.username) {
+        dataToChange.username = this.user.username;
+      }
+
+      if (dataToChange === {}) {
+        this.isApiCall = false;
+        return;
+      }
+      dataToChange._id = this.userState._id;
+      dataToChange.firstName = this.user.firstName;
+      dataToChange.lastName = this.user.lastName;
+      /* eslint-disable no-undef */
+      this.$store
+        .dispatch('auth/updateUser', dataToChange)
+        .then((res) => {
+          showNotification('Сохранено ✅');
+          if (needsGoogleLogOut && !res.data.data.googleId) {
+            const auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut();
+          }
+        })
+        .catch((err) => {
+          if (err.response?.status === 400) {
+            showNotification('Пароль неверный ❌');
+          } else {
+            showNotification('Что то сломалось у нас 🤷‍♂️');
+          }
+        })
+        .finally(() => {
+          this.isApiCall = false;
+        });
+    },
     openFS() {
       const fileInput = document.createElement('input');
       fileInput.setAttribute('type', 'file');
-      fileInput.setAttribute(
-        'accept',
-        'image/png, image/jpeg',
-      );
+      fileInput.setAttribute('accept', 'image/png, image/jpeg');
       fileInput.click();
       fileInput.onchange = () => {
         const file = fileInput.files[0];
         fileInput.remove();
         if (file.type.indexOf('image/') === -1) {
-          showNotification(
-            'Выберите картинку, а не это 🙄',
-          );
+          showNotification('Выберите картинку, а не это 🙄');
           return;
         }
         const reader = new FileReader();
@@ -198,6 +290,8 @@ export default {
           minLength: minLength(4),
           isValid,
         },
+        firstName: { minLength: minLength(2), isName },
+        lastName: { minLength: minLength(3), isName },
       },
     };
   },
@@ -212,11 +306,15 @@ section {
 }
 .settings-tab {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-content: center;
   flex-wrap: wrap;
   flex-grow: 1;
-  padding: 0 8vw;
+}
+
+.basic-form {
+  width: 100%;
+  padding: 0 25px 25px;
 }
 
 .add-photo {
@@ -259,9 +357,15 @@ section {
   }
 }
 
-@media (min-width: 1367px) {
+.settings-section {
+  flex-basis: 100%;
+}
+@media (min-width: 1366px) {
   .add-photo {
-    width: 256px;
+    width: 220px;
+  }
+  .settings-section {
+    flex-basis: 40%;
   }
 }
 </style>

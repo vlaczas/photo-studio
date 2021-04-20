@@ -29,6 +29,7 @@ export default {
       default: '',
     },
   },
+  emits: ['check-result'],
   data() {
     return {
       isChecking: false,
@@ -39,6 +40,7 @@ export default {
     inputText(newVal) {
       if (!newVal || newVal === this.initValue) {
         this.isFree = '';
+        this.$emit('check-result', true);
       } else {
         setTimeout(() => {
           this.checkInput();

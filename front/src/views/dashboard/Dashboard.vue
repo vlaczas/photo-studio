@@ -1,5 +1,8 @@
 <template>
-  <section class="dashboard">
+  <section
+    class="dashboard"
+    @keyup.esc="isOpenModal ? (isOpenModal = false) : isOpenModal"
+  >
     <nav
       :class="{
         'dashboard__left-nav': true,
@@ -28,12 +31,49 @@
           </li>
         </router-link>
         <router-link :to="{ name: 'SettingsTab' }">
-          <li>
-            <img
-              src="@/assets/images/settings.png"
-            />Настройки
-          </li>
+          <li><img src="@/assets/images/settings.png" />Настройки</li>
         </router-link>
+      </ul>
+      <div class="be-somebody" v-if="showBeSomebody">
+        <span @click="deleteBeSomebody" class="closer">X</span>
+        <p
+          tabindex="0"
+          @click="openModal('studio')"
+          @keyup.enter="openModal('photographer')"
+          class="focus-ring"
+        >
+          Добавить свою студию
+        </p>
+        <hr />
+        <p
+          tabindex="0"
+          @click="openModal('photographer')"
+          @keyup.enter="openModal('photographer')"
+          class="focus-ring"
+        >
+          Стать фотографом
+        </p>
+        <base-modal
+          :open="isOpenModal"
+          @close-modal="isOpenModal = !isOpenModal"
+        >
+          <become-ph-or-studio
+            @add-success="isOpenModal = !isOpenModal"
+            :userRole="roleName"
+            :userInfo="user"
+          ></become-ph-or-studio>
+        </base-modal>
+      </div>
+      <ul
+        class="logout focus-ring"
+        tabindex="0"
+        @click="logout"
+        @keyup.enter="logout"
+      >
+        <li>
+          <img src="@/assets/images/logout.png" />
+          Выход
+        </li>
       </ul>
     </nav>
     <div class="dashboard__tab">
@@ -47,11 +87,38 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
+
+const BecomePhOrStudio = defineAsyncComponent({
+  loader: () => import('@/components/BecomePhOrStudio.vue'),
+});
+
 export default {
+  components: {
+    BecomePhOrStudio,
+  },
   data() {
     return {
       hideNav: false,
+      isOpenModal: false,
+      roleName: '',
+      showBeSomebody: true,
     };
+  },
+  methods: {
+    openModal(string) {
+      this.roleName = string;
+      this.isOpenModal = true;
+    },
+    deleteBeSomebody() {
+      this.showBeSomebody = false;
+      localStorage.setItem('beSomebody', '0');
+    },
+    logout() {
+      this.$store
+        .dispatch('auth/logout')
+        .finally(() => this.$router.replace('/'));
+    },
   },
   computed: {
     user() {
@@ -61,6 +128,9 @@ export default {
   beforeMount() {
     if (document.body.clientWidth < 1367) {
       this.hideNav = true;
+    }
+    if (localStorage.getItem('beSomebody') !== null) {
+      this.showBeSomebody = false;
     }
   },
   mounted() {
@@ -104,6 +174,8 @@ export default {
   transition: all 0.3s ease;
 
   ul {
+    flex-grow: 1;
+
     li {
       display: flex;
       align-items: center;
@@ -168,14 +240,43 @@ export default {
     width: min(45%, 170px);
     aspect-ratio: 1 / 1;
     border-radius: 50%;
+    user-select: none;
   }
   figcaption {
     color: var(--col-grey);
     margin: 20px 0 25px;
     text-align: center;
+    word-wrap: break-word;
   }
 }
 
+.be-somebody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  text-align: center;
+  margin: 10px auto;
+  width: 75%;
+  border: var(--col-white) 1px solid;
+  border-radius: 10px;
+  padding: 0 5px;
+
+  hr {
+    width: 100%;
+  }
+  p {
+    font-weight: 800;
+    margin: 20px auto;
+    cursor: pointer;
+  }
+}
+.logout {
+  flex-grow: 0 !important;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
 .dashboard__tab {
   display: flex;
   flex-direction: column;
