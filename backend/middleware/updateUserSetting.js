@@ -15,7 +15,7 @@ async function updateUserSetting(req, res, next) {
     return next(err);
   }
 
-  if (req.body.email) {
+  if (req.body.email && !req.body.googleId) {
     req.body.deleteFields = { googleId: '' };
   }
 

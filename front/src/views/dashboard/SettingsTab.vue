@@ -340,6 +340,7 @@ section {
   .user-img {
     width: 100%;
     border-radius: 50%;
+    user-select: none;
   }
 
   &__btn {

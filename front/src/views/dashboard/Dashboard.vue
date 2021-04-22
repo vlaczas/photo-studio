@@ -17,6 +17,7 @@
       ></div>
       <figure class="avatar">
         <img
+          draggable="false"
           referrerpolicy="no-referrer"
           :src="user.photo"
           alt="Фото пользователя"
@@ -30,11 +31,17 @@
             Избранные
           </li>
         </router-link>
+        <router-link v-if="user.role === 'studio'" :to="{ name: 'StudioTab' }">
+          <li>
+            <img src="@/assets/images/bookmarked.png" />
+            Моя студия
+          </li>
+        </router-link>
         <router-link :to="{ name: 'SettingsTab' }">
           <li><img src="@/assets/images/settings.png" />Настройки</li>
         </router-link>
       </ul>
-      <div class="be-somebody" v-if="showBeSomebody">
+      <div class="be-somebody" v-if="showBeSomebody && user.role === 'user'">
         <span @click="deleteBeSomebody" class="closer">X</span>
         <p
           tabindex="0"
@@ -115,9 +122,10 @@ export default {
       localStorage.setItem('beSomebody', '0');
     },
     logout() {
-      this.$store
-        .dispatch('auth/logout')
-        .finally(() => this.$router.replace('/'));
+      /* eslint-disable no-undef */
+      this.$store.dispatch('auth/logOutUser').finally(() => {
+        this.$router.replace('/');
+      });
     },
   },
   computed: {
@@ -240,7 +248,6 @@ export default {
     width: min(45%, 170px);
     aspect-ratio: 1 / 1;
     border-radius: 50%;
-    user-select: none;
   }
   figcaption {
     color: var(--col-grey);

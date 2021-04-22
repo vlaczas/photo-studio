@@ -37,9 +37,9 @@
       <input
         type="tel"
         id="phone"
-        placeholder="+38 (099) 099 09 09"
+        placeholder="+380 99 099 0909"
         autocomplete="tel"
-        v-maska="'+380 (0##) ### ## ##'"
+        v-maska="'+380 ## ### ####'"
         @maska="rawPhone"
       />
     </div>
@@ -110,7 +110,10 @@ export default {
             .then(() => {
               this.$store
                 .dispatch('auth/updateUser', this.user)
-                .then(() => this.$emit('add-success'))
+                .then(() => {
+                  showNotification(`Ура! теперь вы – ${this.userRole} 🙌`);
+                  this.$emit('add-success');
+                })
                 .catch(() => {
                   showNotification('Такой номер уже используется 📞');
                 })

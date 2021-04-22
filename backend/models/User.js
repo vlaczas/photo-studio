@@ -46,9 +46,9 @@ class User {
   }
   /**
    *
-   * @param {Object} query - Object with email or id for User searching
+   * @param {Object} query - Object with email or username for User searching
    * @param {string} query.email - required or
-   * @param {string} query._id - required
+   * @param {string} query.username - required
    * @returns {Object} found user
    */
 
@@ -64,6 +64,7 @@ class User {
    * @param {object} query - Object with email or id for User searching
    * @param {string} query._id - required
    * @param {object} dataToUpdate - object of fields to update
+   * @param {object} dataToDelete - object of fields to delete
    * @returns {user} updated user
    */
   static async updateUser(query, dataToUpdate, dataToDelete) {
@@ -78,7 +79,6 @@ class User {
       returnOriginal: false,
       ignoreUndefined: true,
     };
-    console.log(dataToDelete);
     const atomData = {
       $set: dataToUpdate,
       $unset: dataToDelete,

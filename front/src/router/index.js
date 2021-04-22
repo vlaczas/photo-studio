@@ -23,6 +23,14 @@ const routes = [
             /* webpackChunkName: "register" */ '../views/RegisterForm.vue'
           ),
       },
+      {
+        path: 'studios/:slug',
+        name: 'StudioProfile',
+        component: () =>
+          import(
+            /* webpackChunkName: "studioProfile" */ '../views/StudioProfile.vue'
+          ),
+      },
     ],
   },
   {
@@ -49,11 +57,14 @@ const routes = [
             /* webpackChunkName: "settingsTab" */ '../views/dashboard/SettingsTab.vue'
           ),
       },
-      // {
-      //   path: 'studio',
-      //   name: 'MyStudio',
-      //   component: () => import('../views/Dashboard/Studio.vue')
-      // }
+      {
+        path: 'studio',
+        name: 'StudioTab',
+        component: () =>
+          import(
+            /* webpackChunkName: "studioTab" */ '../views/dashboard/StudioTab.vue'
+          ),
+      },
     ],
   },
 ];
@@ -73,7 +84,8 @@ router.beforeEach((to, from, next) => {
       .then(() => next())
       .catch(() => {
         store.commit('auth/deAnonUser');
-        next('/');
+        if (to.fullPath.startsWith('/dash')) next('/login');
+        else next();
       });
   } else next();
 });

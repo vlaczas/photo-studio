@@ -4,14 +4,9 @@ export default {
   async registerUser(context, payload) {
     let response;
     if (payload.token) {
-      response = await myAxios.post(
-        `/users/register?token=${payload.token}`,
-      );
+      response = await myAxios.post(`/users/register?token=${payload.token}`);
     } else {
-      response = await myAxios.post(
-        '/users/register',
-        payload,
-      );
+      response = await myAxios.post('/users/register', payload);
     }
 
     context.commit('setUser', response.data.data);
@@ -21,14 +16,9 @@ export default {
   async loginUser(context, payload) {
     let response;
     if (payload.token) {
-      response = await myAxios.post(
-        `/users/login?token=${payload.token}`,
-      );
+      response = await myAxios.post(`/users/login?token=${payload.token}`);
     } else {
-      response = await myAxios.post(
-        '/users/login',
-        payload,
-      );
+      response = await myAxios.post('/users/login', payload);
     }
 
     context.commit('setUser', response.data.data);
@@ -49,6 +39,13 @@ export default {
     return response;
   },
 
+  async logOutUser(context) {
+    const response = await myAxios.put('users/logout');
+
+    context.commit('unsetUser');
+    return response;
+  },
+
   async getMe(context) {
     const response = await myAxios.get('/users/me');
 
@@ -65,10 +62,7 @@ export default {
   async setAvatar(context, formData) {
     const userId = context.getters.getUserId;
 
-    const response = await myAxios.put(
-      `/users?_id=${userId}`,
-      formData,
-    );
+    const response = await myAxios.put(`/users?_id=${userId}`, formData);
 
     context.commit('setUser', response.data.data);
     return response;

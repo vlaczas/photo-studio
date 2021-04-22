@@ -1,5 +1,6 @@
+const { MongoClient } = require('mongodb');
 const User = require('../models/User');
-const MongoClient = require('mongodb').MongoClient;
+const Studio = require('../models/Studio');
 
 const database = new MongoClient(process.env.DATABASE, {
   useNewUrlParser: true,
@@ -16,6 +17,7 @@ const connectDB = async () => {
 
   //* Connect to each model instance;
   await User.injectDB(database);
+  await Studio.injectDB(database);
   console.log(`MongoDB Connected: ${database.s.options.srvHost}`);
 };
 

@@ -1,5 +1,7 @@
 <template>
-  <section>BookmarkedTab</section>
+  <section>
+    <h1 class="dashboard__header">Отмеченные студии</h1>
+  </section>
 </template>
 
 <script>

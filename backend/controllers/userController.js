@@ -74,6 +74,16 @@ class UsersController {
     }
   }
 
+  static async logOutUser(req, res, next) {
+    try {
+      req.session.destroy();
+
+      res.status(200).json({ success: true, data: {} });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   /**
   @desc Update a user via query parameters - can contain .file
    */
@@ -83,8 +93,6 @@ class UsersController {
       const dataToUpdate = req.body;
       const { deleteFields: dataToDelete } = req.body;
       delete dataToUpdate.deleteFields;
-
-      console.log(dataToDelete);
 
       let errorUploads;
       if (dataToUpdate.errorUploads) {
