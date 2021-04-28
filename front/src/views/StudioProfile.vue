@@ -8,7 +8,7 @@
         >
         <div class="studio-profile__header">
           <div class="studio-profile__header-banner">
-            <div v-if="isOwner" @click="openFS" class="edit-icon">
+            <button v-if="isOwner" @click="openFS" class="edit-icon focus-ring">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24px"
@@ -21,7 +21,7 @@
                   d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
                 />
               </svg>
-            </div>
+            </button>
             <img
               :src="studio.banner || 'https://picsum.photos/880/200'"
               alt="Баннер студии"
@@ -29,10 +29,10 @@
             <img :src="studio.logo" alt="Логотип студии" class="logo" />
           </div>
           <div class="studio-profile__header-info">
-            <div
+            <button
               v-if="isOwner"
               @click="editSocials = !editSocials"
-              class="edit-icon"
+              class="edit-icon focus-ring"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -46,12 +46,12 @@
                   d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
                 />
               </svg>
-            </div>
+            </button>
             <base-modal
               @close-modal="editSocials = !editSocials"
               :open="editSocials"
             >
-              <form @submit.prevent="saveSocials" class="basic-form">
+              <form @submit.prevent="saveEdits" class="basic-form">
                 <div class="basic-form__block">
                   <label for="insta">Instagram</label>
                   <input
@@ -136,8 +136,69 @@
             </div>
           </div>
         </div>
+        <div class="map">
+          <div ref="Gmap"></div>
+        </div>
+        <div class="description">
+          <button
+            v-if="isOwner"
+            @click="editDesc = !editDesc"
+            class="edit-icon focus-ring"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 0 24 24"
+              width="24px"
+              fill="#000000"
+            >
+              <path d="M0 0h24v24H0V0z" fill="none" />
+              <path
+                d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
+              />
+            </svg>
+          </button>
+          <base-modal @close-modal="editDesc = !editDesc" :open="editDesc">
+            <form @submit.prevent="saveEdits" class="basic-form">
+              <div class="basic-form__block">
+                <label for="desc">Описание</label>
+                <textarea
+                  rows="20"
+                  id="desc"
+                  v-model.lazy="studio.description"
+                />
+              </div>
+              <base-button type="submit" :isLoading="isApiCall"
+                >Сохранить</base-button
+              >
+            </form>
+          </base-modal>
+          <h2>Описание студии</h2>
+          <p>
+            {{
+              studio.description ||
+                'Тут могли бы быть пару слов о студии и ее залах...'
+            }}
+          </p>
+        </div>
       </main>
-      <aside class="studio-profile__rooms"></aside>
+      <aside class="studio-profile__rooms">
+        <button v-if="isOwner" class="add-button">
+          Добавить зал в студию
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="36px"
+            viewBox="0 0 24 24"
+            width="36px"
+            fill="#000000"
+          >
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+            />
+          </svg>
+        </button>
+      </aside>
     </section>
   </section>
 </template>
@@ -152,6 +213,7 @@ export default {
       studio: {},
       isApiCall: false,
       editSocials: false,
+      editDesc: false,
     };
   },
   methods: {
@@ -184,7 +246,7 @@ export default {
         reader.readAsDataURL(file);
       };
     },
-    saveSocials() {
+    saveEdits() {
       this.isApiCall = true;
       this.$store
         .dispatch('studio/updateStudio', this.studio)
@@ -197,6 +259,37 @@ export default {
         .catch(() => {
           showNotification('Что-то пошло не так 🤷‍♂️');
         });
+    },
+    initMap() {
+      /* eslint-disable */
+      this.$nextTick(() => {
+        const mapElem = this.$refs.Gmap;
+
+        const mapScript = document.createElement('script');
+        mapScript.src =
+          'https://maps.googleapis.com/maps/api/js?key=AIzaSyAETvDj_QtUBYl45XJZGza56rNkiGQtaMI&map_ids=fa727c701462337e';
+        mapScript.async = true;
+        mapScript.id = 'mapScript';
+        document.body.append(mapScript);
+        mapScript.onload = () => {
+          window.map = new google.maps.Map(mapElem, {
+            center: {
+              lat: this.studio.address.location.location[0],
+              lng: this.studio.address.location.location[1],
+            },
+            zoom: 15,
+            mapId: 'fa727c701462337e',
+          });
+          const marker = new google.maps.Marker({
+            position: {
+              lat: this.studio.address.location.location[0],
+              lng: this.studio.address.location.location[1],
+            },
+            map: window.map,
+            animation: google.maps.Animation.DROP,
+          });
+        };
+      });
     },
   },
   computed: {
@@ -213,6 +306,7 @@ export default {
           this.isOwner = true;
           this.$store.commit('studio/setOwnerStudio', this.studio);
         }
+        this.initMap();
       })
       .catch((res) => console.log(res.data.error));
   },
@@ -228,7 +322,17 @@ export default {
     align-self: center;
     transform: scale(2.5);
   }
-
+  main {
+    width: 45vw;
+  }
+  .map {
+    height: 400px;
+    margin-bottom: 20px;
+    div {
+      border-radius: 10px;
+      height: 100%;
+    }
+  }
   section {
     display: flex;
     justify-content: center;
@@ -251,6 +355,7 @@ export default {
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    border: none;
 
     &:hover {
       background-color: var(--col-grey);
@@ -275,7 +380,6 @@ export default {
     margin-bottom: 20px;
     &-banner {
       position: relative;
-      width: 45vw;
       height: 200px;
       img {
         width: 100%;
@@ -335,12 +439,58 @@ export default {
     }
   }
 
+  .description {
+    position: relative;
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 20px;
+
+    textarea {
+      padding: 8px;
+      width: 100%;
+      resize: none;
+    }
+
+    h2 {
+      font-size: var(--font-h2);
+      font-weight: 600;
+    }
+    p {
+      margin-top: 20px;
+      font-size: var(--font-lst);
+      white-space: pre-line;
+      word-wrap: break-word;
+    }
+  }
+
   .studio-profile__rooms {
     margin-left: 30px;
     background-color: white;
     width: 20vw;
     height: 420px;
     border-radius: 10px;
+    overflow: hidden;
+
+    .add-button {
+      width: 100%;
+      border: none;
+      background-color: rgb(224, 224, 224);
+      padding: 20px 0 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+
+      &:hover {
+        background-color: var(--col-grey);
+      }
+      svg {
+        margin-top: 5px;
+      }
+    }
   }
 }
 </style>
