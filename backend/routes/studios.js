@@ -15,6 +15,16 @@ router
     imgUploader.array('photos', 4),
     imageUploader('logo', 'studiosLogos', { isUniqueName: true }),
     studioController.updateStudio,
+  )
+  .patch(
+    protectUser('studio'),
+    imgUploader.array('photos', 4),
+    imageUploader('banner', 'studiosBanners', {
+      isUniqueName: true,
+      width: 880,
+      height: 200,
+    }),
+    studioController.updateStudio,
   );
 
 module.exports = router;

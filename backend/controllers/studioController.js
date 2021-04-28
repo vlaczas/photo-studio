@@ -10,6 +10,7 @@ class StudioController {
     try {
       const newStudioData = req.body;
       newStudioData.owner = req.session.user._id;
+      newStudioData.rooms = [];
 
       const {
         ops: [newStudio],
@@ -35,7 +36,7 @@ class StudioController {
    */
   static async getSingleStudio(req, res, next) {
     try {
-      const query = { ...req.body };
+      const query = { ...req.query };
 
       const foundStudio = await Studio.getStudio(query);
 
@@ -61,6 +62,7 @@ class StudioController {
         errorUploads = dataToUpdate.errorUploads;
       }
       delete dataToUpdate.errorUploads;
+
       const { value: updatedStudio } = await Studio.updateStudio(
         query,
         dataToUpdate,

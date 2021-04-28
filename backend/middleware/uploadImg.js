@@ -15,33 +15,48 @@ const MAX_FILE_SIZE = 6000000;
  * @param {object} [options]- not required options
  * @param {boolean} options.isMultiple
  * @param {boolean} options.isUniqueName
+ * @param {number} options.width
+ * @param {number} options.height
+ * @param {number} options.quality
+ * @param {string} options.crop
  * @returns middleware to Cloudinary upload
  */
 
 function imageUploader(
   fieldInDBName,
   folderName,
-  { isMultiple = false, isUniqueName = false },
+  {
+    isMultiple = false,
+    isUniqueName = false,
+    width = 500,
+    height = 500,
+    quality = 80,
+    crop = 'scale',
+  },
 ) {
   return async (req, res, next) => {
     // check for valid call
     if (!req.files) {
-      return next();
+      next();
+      return;
     }
-    if (!fieldInDBName || !folderName) {
-      return next(new ErrorResponse('invalid img upload call', 500));
-    }
-    // check the size and the type
-    req.files.forEach((img) => {
-      if (img.size > MAX_FILE_SIZE || !img.mimetype.startsWith('image')) {
-        return next(
-          new ErrorResponse(
-            'Image needs to be in image format and less then 5MB',
-            400,
-          ),
-        );
+
+    try {
+      if (!fieldInDBName || !folderName) {
+        throw new Error('invalid img upload call');
       }
-    });
+      // check the size and the type
+      req.files.forEach((img) => {
+        if (img.size > MAX_FILE_SIZE || !img.mimetype.startsWith('image')) {
+          throw new Error(
+            'Image needs to be in image format and less then 5MB',
+          );
+        }
+      });
+    } catch (error) {
+      next(new ErrorResponse(error.message, 400));
+      return;
+    }
 
     const clodinaryCalls = req.files.map((file) => {
       // create Base64 string to send
@@ -50,6 +65,10 @@ function imageUploader(
         `data:${file.mimetype};base64,${base64str}`,
         {
           folder: folderName,
+          width,
+          height,
+          crop,
+          quality,
           tags: req.session.user._id,
           public_id: isUniqueName ? req.session.user._id : undefined,
         },

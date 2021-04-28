@@ -253,7 +253,7 @@ export default {
           if (err.response?.status === 400) {
             showNotification('Пароль неверный ❌');
           } else {
-            showNotification('Что то сломалось у нас 🤷‍♂️');
+            console.log(err);
           }
         })
         .finally(() => {

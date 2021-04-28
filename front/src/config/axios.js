@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const myAxios = axios.create({
   baseURL,
-  timeout: 2000,
+  timeout: 5000,
   withCredentials: true,
 });
 

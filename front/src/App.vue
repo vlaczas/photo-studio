@@ -36,7 +36,9 @@ h1 {
   font-weight: 800;
   text-align: center;
 }
-
+#app {
+  background-color: var(--col-lgrey);
+}
 .closer {
   font-size: var(--font-h2);
   font-weight: 800;

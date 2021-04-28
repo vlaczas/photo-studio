@@ -1,5 +1,5 @@
 export default {
-  setOwnerStudio(state, newStudio) {
-    state.studio = { ...newStudio };
+  setOwnerStudio(state, studioData) {
+    state.studio = { ...studioData };
   },
 };

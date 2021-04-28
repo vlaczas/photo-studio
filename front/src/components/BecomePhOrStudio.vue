@@ -111,7 +111,7 @@ export default {
               this.$store
                 .dispatch('auth/updateUser', this.user)
                 .then(() => {
-                  showNotification(`Ура! теперь вы – ${this.userRole} 🙌`);
+                  showNotification(`Ура! теперь вы – ${this.roleName} 🙌`);
                   this.$emit('add-success');
                 })
                 .catch(() => {

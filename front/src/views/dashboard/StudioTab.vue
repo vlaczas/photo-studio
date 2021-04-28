@@ -34,9 +34,24 @@
           :dispatchPath="'studio/setLogo'"
         ></photo-downloader>
       </base-modal>
-      <form class="basic-form" @submit.prevent="updateStudio">
+      <div v-if="studio.slug">
+        <router-link
+          v-if="studio.slug"
+          :to="{
+            name: 'StudioProfile',
+            params: { slug: studio.slug },
+          }"
+        >
+          <base-button color="white">Профиль студии</base-button>
+        </router-link>
+      </div>
+      <form class="basic-form">
         <div class="basic-form__block">
           <label for="address">Адрес</label>
+          <span class="basic-form__warning">
+            💡 Если ваша студия есть на Гугл Картах, вы можете ввести просто
+            название студии
+          </span>
           <input
             ref="address"
             required
@@ -85,21 +100,13 @@
             v-model.trim.lazy="studio.contacts.website"
           />
         </div>
-        <div class="btn-group">
-          <router-link
-            v-if="studio.slug"
-            :to="{
-              name: 'StudioProfile',
-              params: { slug: studio.slug },
-            }"
-          >
-            <base-button color="white">Профиль студии</base-button>
-          </router-link>
 
-          <base-button :isLoading="isApiCall" color="white"
-            >Cохранить</base-button
-          >
-        </div>
+        <base-button
+          @click.prevent="updateStudio"
+          :isLoading="isApiCall"
+          color="white"
+          >Cохранить</base-button
+        >
       </form>
     </div>
   </section>
@@ -134,21 +141,15 @@ export default {
     userState() {
       return this.$store.getters['auth/getUser'];
     },
+    studioState() {
+      return this.$store.getters['studio/getStudio'];
+    },
   },
   mounted() {
-    if (!document.getElementById('maps')) {
-      const GMapsScript = document.createElement('script');
-      GMapsScript.id = 'maps';
-      GMapsScript.src =
-        'https://maps.googleapis.com/maps/api/js?key=AIzaSyC1Jhemu02fwo2IkRdnKp2ADo50o1ZNu2Q&libraries=places&region=UA&language=ru&callback=initAutocomplete';
-      document.head.append(GMapsScript);
-    }
     const input = this.$refs.address;
     /* eslint-disable no-undef */
-
     // this is a center of Kharkiv
     const center = { lat: 49.989867, lng: 36.25731 };
-
     // rect 10km
     const defaultBounds = {
       north: center.lat + 0.1,
@@ -171,10 +172,11 @@ export default {
       origin: center,
       strictBounds: true,
     };
-    window.initAutocomplete = () => {
-      const autocomplete = new google.maps.places.Autocomplete(input, options);
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
+
+    const initAutocomplete = () => {
+      window.autocomplete = new google.maps.places.Autocomplete(input, options);
+      window.autocomplete.addListener('place_changed', () => {
+        const place = window.autocomplete.getPlace();
         if (!place.geometry) {
           showNotification('Выберите правильный адрес студии 🚧');
         } else {
@@ -182,14 +184,26 @@ export default {
         }
       });
     };
+
+    if (!document.getElementById('maps')) {
+      const GMapsScript = document.createElement('script');
+      GMapsScript.id = 'maps';
+      GMapsScript.src =
+        'https://maps.googleapis.com/maps/api/js?key=AIzaSyAETvDj_QtUBYl45XJZGza56rNkiGQtaMI&libraries=places&region=UA&language=ru';
+      document.head.append(GMapsScript);
+
+      GMapsScript.onload = () => initAutocomplete();
+    } else initAutocomplete();
   },
   created() {
     this.user = this.$store.getters['auth/getUser'];
-    if (this.user.studio) {
+    if (this.user.studio && !this.studioState) {
       this.$store
         .dispatch('studio/getOwnStudio', { _id: this.user.studio })
         .then((res) => (this.studio = res.data.data))
         .catch((err) => err.response?.data);
+    } else if (this.studioState) {
+      this.studio = { ...this.studioState };
     }
   },
   methods: {
@@ -197,10 +211,11 @@ export default {
       this.openPhotoDown = false;
       this.studio = this.$store.getters['studio/getStudio'];
     },
-    updateStudio() {
+    updateStudio(event) {
       /* eslint-disable operator-linebreak */
+      if (!event.clientY && !event.clientX) return;
       this.isApiCall = true;
-      const action = this.user.studio
+      const action = this.userState.studio
         ? 'studio/updateStudio'
         : 'studio/createStudio';
       this.$store
@@ -262,24 +277,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.btn-group {
-  display: flex;
-  justify-content: flex-end;
-
-  div,
-  a {
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-}
 section {
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
+.studioTab {
+  & > div {
+    width: fit-content;
+    margin: 0 auto;
+  }
+}
 .add-photo {
   width: 200px;
   aspect-ratio: 1 / 1;

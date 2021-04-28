@@ -68,6 +68,12 @@ class Studio {
    */
   static async updateStudio(query, dataToUpdate) {
     const filter = { _id: ObjectID(query) };
+    const updatedData = { ...dataToUpdate };
+
+    //* generate slug for the studio
+    if (updatedData.name && updatedData.slug) {
+      updatedData.slug = slugify(updatedData.name, { lower: true });
+    }
 
     const options = {
       bypassDocumentValidation: true,
@@ -79,7 +85,7 @@ class Studio {
       ignoreUndefined: true,
     };
     const atomData = {
-      $set: dataToUpdate,
+      $set: updatedData,
     };
 
     return studios.findOneAndUpdate(filter, atomData, options);

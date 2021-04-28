@@ -66,8 +66,8 @@ class UsersController {
       //* if user logging in via email/pw
       if (!req.query.token) {
         await comparePasswords(req);
-        delete foundUser.password;
       }
+      delete foundUser.password;
       res.status(200).json({ success: true, data: foundUser });
     } catch (error) {
       next(error);

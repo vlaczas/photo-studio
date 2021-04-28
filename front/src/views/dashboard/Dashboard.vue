@@ -27,18 +27,23 @@
       <ul ref="navUl">
         <router-link :to="{ name: 'BookmarkedTab' }">
           <li>
-            <img src="@/assets/images/bookmarked.png" />
+            <img draggable="false" src="@/assets/images/bookmarked.png" />
             Избранные
           </li>
         </router-link>
         <router-link v-if="user.role === 'studio'" :to="{ name: 'StudioTab' }">
           <li>
-            <img src="@/assets/images/bookmarked.png" />
+            <img draggable="false" src="@/assets/images/camera.png" />
             Моя студия
           </li>
         </router-link>
         <router-link :to="{ name: 'SettingsTab' }">
-          <li><img src="@/assets/images/settings.png" />Настройки</li>
+          <li>
+            <img
+              draggable="false"
+              src="@/assets/images/settings.png"
+            />Настройки
+          </li>
         </router-link>
       </ul>
       <div class="be-somebody" v-if="showBeSomebody && user.role === 'user'">
@@ -173,7 +178,7 @@ export default {
 
 .dashboard__left-nav {
   display: flex;
-  position: absolute;
+  position: fixed;
   flex-direction: column;
   height: 100vh;
   width: 60vw;
@@ -289,7 +294,8 @@ export default {
   flex-direction: column;
   background-color: var(--col-dashBlack);
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
   z-index: 0;
   overflow-y: auto;
 }

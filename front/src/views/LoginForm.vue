@@ -2,10 +2,26 @@
   <base-modal @close-modal="toggleModal" :open="true">
     <form class="basic-form" @submit.prevent="submitCreds">
       <h1 class="basic-form__header">ВХОД</h1>
-      <div tabindex="0" id="googleBtn" class="customGPlusSignIn focus-ring">
-        <span class="g-icon"></span>
-        <span class="buttonText">Войти через Google</span>
+      <div id="googleBtn">
+        <div
+          id="g_id_onload"
+          data-client_id="1011107927314-ql5jokbt0f5nktn3mtcnpr6daqj7qk9m.apps.googleusercontent.com"
+          data-ux_mode="popup"
+          data-callback="handleGoogle"
+          data-auto_prompt="false"
+        ></div>
+
+        <div
+          class="g_id_signin"
+          data-type="standard"
+          data-shape="pill"
+          data-theme="filled_black"
+          data-text="signin_with"
+          data-size="large"
+          data-logo_alignment="left"
+        ></div>
       </div>
+
       <p>или</p>
       <div class="basic-form__block">
         <label for="email">Электронная почта</label>
@@ -70,28 +86,37 @@ export default {
         .finally(() => (this.isApiCall = false));
     },
   },
-  mounted() {
-    /* eslint-disable no-undef */
-    window.googleUser = {};
-    gapi.load('auth2', () => {
-      const auth2 = gapi.auth2.init({
-        client_id:
-          '1011107927314-ql5jokbt0f5nktn3mtcnpr6daqj7qk9m.apps.googleusercontent.com',
-        cookiepolicy: 'single_host_origin',
-      });
-      const googleBtn = document.getElementById('googleBtn');
-      auth2.attachClickHandler(googleBtn, {}, (googleUser) => {
-        this.isApiCall = true;
-        const token = googleUser.getAuthResponse().id_token;
-        this.$store
-          .dispatch('auth/loginUser', { token })
-          .then(() => this.$router.replace('/'))
-          .catch(() => {
-            showNotification('Google поломался 🤦‍♂️');
-          })
-          .finally(() => (this.isApiCall = false));
-      });
-    });
+  beforeCreate() {
+    /* eslint-disable */
+    window.handleGoogle = (response) => {
+      this.isApiCall = true;
+
+      const token = response.credential;
+      this.$store
+        .dispatch('auth/loginUser', { token })
+        .then(() => this.$router.replace('/'))
+        .catch(() => {
+          this.$store.dispatch(
+            'helpers/showNotification',
+            'Google поломался 🤦‍♂️',
+          );
+        })
+        .finally(() => (this.isApiCall = false));
+    };
+
+    const googleidentityservice = document.getElementById(
+      'googleidentityservice',
+    );
+    if (googleidentityservice_button_styles) {
+      googleidentityservice_button_styles.remove();
+      googleidentity.remove();
+      googleidentityservice ? googleidentityservice.remove() : false;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.id = 'googleidentity';
+    script.async = true;
+    document.head.append(script);
   },
 };
 </script>
@@ -172,29 +197,8 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 45px;
-  width: 70%;
-  min-width: 230px;
+  height: 70px;
   margin: 0 auto;
-  padding: 0 10px;
-  border: 2px solid black;
-  border-radius: 7px;
-  cursor: pointer;
-  &:active {
-    transform: scale(0.97);
-  }
-}
-
-span.buttonText {
-  flex-grow: 1;
-  text-align: center;
-}
-span.g-icon {
-  background: url('/img/g-normal.png') transparent 0 50% no-repeat;
-  background-size: 36px;
-  width: 36px;
-  height: 36px;
-  display: block;
 }
 @media (min-width: 768px) {
   .basic-form {
