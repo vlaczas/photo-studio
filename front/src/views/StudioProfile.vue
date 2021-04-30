@@ -183,7 +183,7 @@
         </div>
       </main>
       <aside class="studio-profile__rooms">
-        <button v-if="isOwner" class="add-button">
+        <button v-if="isOwner" class="add-button" @click="roomForm = true">
           Добавить зал в студию
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -198,6 +198,12 @@
             />
           </svg>
         </button>
+        <base-modal @close-modal="roomForm = false" :open="roomForm">
+          <room-form
+            @close-modal="roomForm = false"
+            :roomToChange="roomToChange"
+          ></room-form>
+        </base-modal>
       </aside>
     </section>
   </section>
@@ -205,15 +211,29 @@
 
 <script>
 import showNotification from '@/hooks/showNotification';
+import { defineAsyncComponent } from 'vue';
+
+const RoomForm = defineAsyncComponent({
+  loader: () => import('@/components/studio/RoomForm.vue'),
+});
 
 export default {
+  components: { RoomForm },
   data() {
     return {
       isOwner: false,
       studio: {},
+      room: {},
       isApiCall: false,
       editSocials: false,
       editDesc: false,
+      roomForm: false,
+      roomToChange: {
+        name: '',
+        price: 0,
+        tags: [],
+        photos: [],
+      },
     };
   },
   methods: {
@@ -264,7 +284,6 @@ export default {
       /* eslint-disable */
       this.$nextTick(() => {
         const mapElem = this.$refs.Gmap;
-
         const mapScript = document.createElement('script');
         mapScript.src =
           'https://maps.googleapis.com/maps/api/js?key=AIzaSyAETvDj_QtUBYl45XJZGza56rNkiGQtaMI&map_ids=fa727c701462337e';
@@ -438,6 +457,10 @@ export default {
       }
     }
   }
+  h2 {
+    font-size: var(--font-h2);
+    font-weight: 600;
+  }
 
   .description {
     position: relative;
@@ -446,16 +469,6 @@ export default {
     padding: 30px;
     margin-bottom: 20px;
 
-    textarea {
-      padding: 8px;
-      width: 100%;
-      resize: none;
-    }
-
-    h2 {
-      font-size: var(--font-h2);
-      font-weight: 600;
-    }
     p {
       margin-top: 20px;
       font-size: var(--font-lst);

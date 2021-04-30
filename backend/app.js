@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const { connectDB } = require('./configs/db');
 const routerUsers = require('./routes/users');
 const routerStudios = require('./routes/studios');
+const routerRooms = require('./routes/rooms');
 const errorHandler = require('./middleware/error');
 
 const app = express();
@@ -60,6 +61,7 @@ app.use(morgan('dev'));
 //* Use routs
 app.use('/api/v1/users', routerUsers);
 app.use('/api/v1/studios', routerStudios);
+app.use('/api/v1/rooms', routerRooms);
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'static/index.html'));
 });

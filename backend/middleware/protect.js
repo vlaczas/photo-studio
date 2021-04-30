@@ -11,8 +11,12 @@ function protectUser(userRole = 'user') {
     if (!req.session.user) {
       return next(new ErrorResponse('Unauthorized', 401));
     }
-
-    const whatToChange = req.body._id || req.params._id || req.query._id;
+    /* eslint-disable operator-linebreak */
+    const whatToChange =
+      req.body._id ||
+      req.params._id ||
+      req.query._id ||
+      req.session.user.studio;
 
     switch (userRole) {
       case 'user':

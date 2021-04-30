@@ -53,11 +53,25 @@ class Studio {
     if (query._id) filter._id = ObjectID(query._id);
     else if (query.owner) filter.owner = ObjectID(query.owner);
 
-    const projection = {
-      createdAt: 0,
-      updatedAt: 0,
-    };
-    return studios.findOne(filter, { projection });
+    return studios.aggregate([
+      {
+        $match: filter,
+      },
+      {
+        $lookup: {
+          from: 'rooms',
+          localField: 'rooms',
+          foreignField: '_id',
+          as: 'rooms',
+        },
+      },
+      {
+        $project: {
+          createdAt: 0,
+          updatedAt: 0,
+        },
+      },
+    ]);
   }
 
   /**

@@ -18,6 +18,15 @@ export default {
     },
   },
   emits: ['close-modal'],
+  watch: {
+    open(newVal) {
+      if (newVal) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    },
+  },
 };
 </script>
 
@@ -36,7 +45,9 @@ export default {
 }
 .modal-inner {
   background-color: var(--col-white);
-  border-radius: 10px;
+  border-radius: 20px;
+  max-height: 80vh;
+  overflow: auto;
 }
 .modal-enter-from,
 .modal-leave-to {

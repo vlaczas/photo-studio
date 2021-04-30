@@ -31,6 +31,13 @@ a {
     color: var(--col-fio);
   }
 }
+
+textarea {
+  padding: 8px;
+  width: 100%;
+  resize: none;
+}
+
 h1 {
   font-size: var(--font-h1);
   font-weight: 800;

@@ -38,7 +38,8 @@ class StudioController {
     try {
       const query = { ...req.query };
 
-      const foundStudio = await Studio.getStudio(query);
+      let foundStudio = await Studio.getStudio(query);
+      [foundStudio] = await foundStudio.toArray();
 
       res.status(200).json({ success: true, data: foundStudio });
     } catch (error) {
