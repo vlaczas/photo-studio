@@ -1,148 +1,36 @@
 <template>
-  <section class="studio-profile">
+  <section>
     <spinner v-if="!studio._id"></spinner>
-    <section v-else>
-      <main>
-        <span v-if="isOwner"
-          >Рекоммендуемый размер баннера - 880x200 и меньше 5 мегабайт</span
-        >
-        <div class="studio-profile__header">
-          <div class="studio-profile__header-banner">
-            <button v-if="isOwner" @click="openFS" class="edit-icon focus-ring">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 0 24 24"
-                width="24px"
-                fill="#000000"
-              >
-                <path d="M0 0h24v24H0V0z" fill="none" />
-                <path
-                  d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
-                />
-              </svg>
-            </button>
-            <img
-              :src="studio.banner || 'https://picsum.photos/880/200'"
-              alt="Баннер студии"
-            />
-            <img :src="studio.logo" alt="Логотип студии" class="logo" />
-          </div>
-          <div class="studio-profile__header-info">
-            <button
-              v-if="isOwner"
-              @click="editSocials = !editSocials"
-              class="edit-icon focus-ring"
+    <section class="studio-profile" v-else>
+      <span v-if="isOwner"
+        >Рекоммендуемый размер баннера - 800x200 и меньше 5 мегабайт</span
+      >
+      <div class="studio-profile__header">
+        <div class="studio-profile__header-banner">
+          <button v-if="isOwner" @click="openFS" class="edit-icon focus-ring">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 0 24 24"
+              width="24px"
+              fill="#000000"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 0 24 24"
-                width="24px"
-                fill="#000000"
-              >
-                <path d="M0 0h24v24H0V0z" fill="none" />
-                <path
-                  d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
-                />
-              </svg>
-            </button>
-            <base-modal
-              @close-modal="editSocials = !editSocials"
-              :open="editSocials"
-            >
-              <form @submit.prevent="saveEdits" class="basic-form">
-                <div class="basic-form__block">
-                  <label for="insta">Instagram</label>
-                  <input
-                    type="url"
-                    id="insta"
-                    v-model="studio.contacts.insta"
-                  />
-                </div>
-                <div class="basic-form__block">
-                  <label for="fb">Facebook</label>
-                  <input type="url" id="fb" v-model="studio.contacts.fb" />
-                </div>
-                <div class="basic-form__block">
-                  <label for="website">Сайт</label>
-                  <input
-                    type="url"
-                    id="website"
-                    v-model="studio.contacts.website"
-                  />
-                </div>
-                <base-button type="submit" :isLoading="isApiCall"
-                  >Сохранить</base-button
-                >
-              </form>
-            </base-modal>
-            <h1 class="header-info__name">
-              {{ studio.name }}
-            </h1>
-            <span class="header-info__contacts">
-              <img src="@/assets/images/location.png" />{{
-                studio.address.address
-              }}</span
-            >
-            <span class="header-info__contacts">
-              <img src="@/assets/images/room.png" />Количество залов:
-              {{ studio.rooms.length || 'Еще нет залов' }}</span
-            >
-            <span class="header-info__contacts">
-              <img src="@/assets/images/phone.png" />Телефон:
-              <a :href="'tel:' + studio.contacts.phone">
-                {{ studio.contacts.phone }}</a
-              ></span
-            >
-            <span class="header-info__contacts" v-if="studio.contacts.addPhone">
-              <img src="@/assets/images/phone.png" />Доп. телефон:
-              <a :href="'tel:' + studio.contacts.addPhone">
-                {{ studio.contacts.addPhone }}</a
-              >
-            </span>
-            <div class="header-info__socials">
-              <a
-                :href="studio.contacts.fb"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span v-if="studio.contacts.insta || isOwner">
-                  <img src="@/assets/images/instagram.png" alt="instagram" />
-                  @{{ studio.contacts.insta?.split('/')[3] }}
-                </span></a
-              >
-              <a
-                :href="studio.contacts.insta"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span v-if="studio.contacts.fb || isOwner"
-                  ><img src="@/assets/images/facebook.png" alt="facebook" /> @{{
-                    studio.contacts.fb?.split('/')[3]
-                  }}</span
-                ></a
-              >
-              <a
-                :href="studio.contacts.website"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span v-if="studio.contacts.website || isOwner">
-                  <img src="@/assets/images/website.png" alt="сайт" />
-                  {{ studio.contacts.website }}</span
-                ></a
-              >
-            </div>
-          </div>
+              <path d="M0 0h24v24H0V0z" fill="none" />
+              <path
+                d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
+              />
+            </svg>
+          </button>
+          <img
+            :src="studio.banner || 'https://picsum.photos/800/200'"
+            alt="Баннер студии"
+          />
+          <img :src="studio.logo" alt="Логотип студии" class="logo" />
         </div>
-        <div class="map">
-          <div ref="Gmap"></div>
-        </div>
-        <div class="description">
+        <div class="studio-profile__header-info">
           <button
             v-if="isOwner"
-            @click="editDesc = !editDesc"
+            @click="editSocials = !editSocials"
             class="edit-icon focus-ring"
           >
             <svg
@@ -158,14 +46,25 @@
               />
             </svg>
           </button>
-          <base-modal @close-modal="editDesc = !editDesc" :open="editDesc">
+          <base-modal
+            @close-modal="editSocials = !editSocials"
+            :open="editSocials"
+          >
             <form @submit.prevent="saveEdits" class="basic-form">
               <div class="basic-form__block">
-                <label for="desc">Описание</label>
-                <textarea
-                  rows="20"
-                  id="desc"
-                  v-model.lazy="studio.description"
+                <label for="insta">Instagram</label>
+                <input type="url" id="insta" v-model="studio.contacts.insta" />
+              </div>
+              <div class="basic-form__block">
+                <label for="fb">Facebook</label>
+                <input type="url" id="fb" v-model="studio.contacts.fb" />
+              </div>
+              <div class="basic-form__block">
+                <label for="website">Сайт</label>
+                <input
+                  type="url"
+                  id="website"
+                  v-model="studio.contacts.website"
                 />
               </div>
               <base-button type="submit" :isLoading="isApiCall"
@@ -173,17 +72,72 @@
               >
             </form>
           </base-modal>
-          <h2>Описание студии</h2>
-          <p>
-            {{
-              studio.description ||
-                'Тут могли бы быть пару слов о студии и ее залах...'
-            }}
-          </p>
+          <h1 class="header-info__name">
+            {{ studio.name }}
+          </h1>
+          <div class="header-info__contacts">
+            <span>
+              <img src="@/assets/images/location.png" />{{
+                studio.address.address
+              }}</span
+            >
+            <span>
+              <img src="@/assets/images/room.png" />Количество залов:
+              {{ studio.rooms.length || 'Еще нет залов' }}</span
+            >
+            <span>
+              <img src="@/assets/images/phone.png" />Телефон:
+              <a :href="'tel:' + studio.contacts.phone">
+                {{ studio.contacts.phone }}</a
+              ></span
+            >
+            <span v-if="studio.contacts.addPhone">
+              <img src="@/assets/images/phone.png" />Доптелефон:
+              <a :href="'tel:' + studio.contacts.addPhone">
+                {{ studio.contacts.addPhone }}</a
+              >
+            </span>
+          </div>
+          <div class="header-info__socials">
+            <a
+              :href="studio.contacts.fb"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span v-if="studio.contacts.insta || isOwner">
+                <img src="@/assets/images/instagram.png" alt="instagram" />
+                @{{ studio.contacts.insta?.split('/')[3] }}
+              </span></a
+            >
+            <a
+              :href="studio.contacts.insta"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span v-if="studio.contacts.fb || isOwner"
+                ><img src="@/assets/images/facebook.png" alt="facebook" /> @{{
+                  studio.contacts.fb?.split('/')[3]
+                }}</span
+              ></a
+            >
+            <a
+              :href="studio.contacts.website"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span v-if="studio.contacts.website || isOwner">
+                <img src="@/assets/images/website.png" alt="сайт" />
+                {{ studio.contacts.website }}</span
+              ></a
+            >
+          </div>
         </div>
-      </main>
-      <aside class="studio-profile__rooms">
-        <button v-if="isOwner" class="add-button" @click="roomForm = true">
+      </div>
+      <div class="map">
+        <div ref="Gmap"></div>
+      </div>
+      <div class="studio-profile__rooms">
+        <button v-if="isOwner" class="add-room" @click="openRoomForm(false)">
           Добавить зал в студию
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -204,7 +158,68 @@
             :roomToChange="roomToChange"
           ></room-form>
         </base-modal>
-      </aside>
+        <div class="room" v-for="(room, idx) in studio.rooms" :key="room">
+          <button
+            v-if="isOwner"
+            @click="openRoomForm(idx)"
+            class="edit-icon focus-ring"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="20px"
+              viewBox="0 0 24 24"
+              width="20px"
+              fill="#000000"
+              data-v-6df31cae=""
+            >
+              <path d="M0 0h24v24H0V0z" fill="none" data-v-6df31cae=""></path>
+              <path
+                d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
+                data-v-6df31cae=""
+              ></path>
+            </svg>
+          </button>
+          <room-preview :room="room"></room-preview>
+        </div>
+      </div>
+      <div class="description">
+        <button
+          v-if="isOwner"
+          @click="editDesc = !editDesc"
+          class="edit-icon focus-ring"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 0 24 24"
+            width="24px"
+            fill="#000000"
+          >
+            <path d="M0 0h24v24H0V0z" fill="none" />
+            <path
+              d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
+            />
+          </svg>
+        </button>
+        <base-modal @close-modal="editDesc = !editDesc" :open="editDesc">
+          <form @submit.prevent="saveEdits" class="basic-form">
+            <div class="basic-form__block">
+              <label for="desc">Описание</label>
+              <textarea rows="20" id="desc" v-model.lazy="studio.description" />
+            </div>
+            <base-button type="submit" :isLoading="isApiCall"
+              >Сохранить</base-button
+            >
+          </form>
+        </base-modal>
+        <h2>Описание студии</h2>
+        <p>
+          {{
+            studio.description ||
+              'Тут могли бы быть пару слов о студии и ее залах...'
+          }}
+        </p>
+      </div>
     </section>
   </section>
 </template>
@@ -212,13 +227,14 @@
 <script>
 import showNotification from '@/hooks/showNotification';
 import { defineAsyncComponent } from 'vue';
+import RoomPreview from '@/components/studio/RoomPreview.vue';
 
 const RoomForm = defineAsyncComponent({
   loader: () => import('@/components/studio/RoomForm.vue'),
 });
 
 export default {
-  components: { RoomForm },
+  components: { RoomForm, RoomPreview },
   data() {
     return {
       isOwner: false,
@@ -228,12 +244,7 @@ export default {
       editSocials: false,
       editDesc: false,
       roomForm: false,
-      roomToChange: {
-        name: '',
-        price: 0,
-        tags: [],
-        photos: [],
-      },
+      roomToChange: {},
     };
   },
   methods: {
@@ -310,6 +321,19 @@ export default {
         };
       });
     },
+    openRoomForm(idx) {
+      if (idx === false) {
+        this.roomToChange = {
+          name: '',
+          price: 0,
+          tags: [],
+          photos: [],
+        };
+      } else {
+        this.roomToChange = this.studio.rooms[idx];
+      }
+      this.roomForm = true;
+    },
   },
   computed: {
     user() {
@@ -333,176 +357,195 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  z-index: 1;
+
+  &:hover {
+    background-color: var(--col-white);
+  }
+}
 .studio-profile {
-  min-height: calc(100vh - 91px);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+
+  & > span {
+    text-align: center;
+    font-size: var(--font-lst);
+    margin: 0 5px;
+    grid-area: notice;
+  }
+
   & > div {
-    align-self: center;
-    transform: scale(2.5);
-  }
-  main {
-    width: 45vw;
-  }
-  .map {
-    height: 400px;
-    margin-bottom: 20px;
-    div {
-      border-radius: 10px;
-      height: 100%;
-    }
-  }
-  section {
-    display: flex;
-    justify-content: center;
-  }
-  span {
-    font-size: var(--font-sm);
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-  }
-  .edit-icon {
-    position: absolute;
-    top: 20px;
-    right: 20px;
     background-color: white;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border: none;
-
-    &:hover {
-      background-color: var(--col-grey);
-    }
+    margin-bottom: 30px;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
   }
-
+}
+.studio-profile__header {
+  grid-area: header;
+}
+.studio-profile__header-banner {
+  position: relative;
+  img {
+    width: 100%;
+    height: 120px;
+  }
   .logo {
     position: absolute;
-    width: 150px;
-    height: 150px;
-    left: 25px;
-    top: 110px;
+    width: 75px;
+    height: 75px;
+    top: 75px;
+    left: 30px;
     border-radius: 50%;
-    border: 4px white solid;
     background-color: white;
+    border: 3px white solid;
   }
+}
 
-  &__header {
-    background-color: white;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    &-banner {
-      position: relative;
-      height: 200px;
-      img {
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-  .studio-profile__header-info {
-    position: relative;
-    display: grid;
-    grid-template-columns: 70% 30%;
-    padding: 30px;
-    padding-top: 70px;
-    justify-items: flex-start;
-  }
+.studio-profile__header-info {
+  position: relative;
   .header-info__name {
-    font-size: var(--font-h1);
-    font-weight: 600;
+    padding: 50px 30px 0;
+    text-align: left;
   }
 
   .header-info__contacts {
-    grid-column: 1 / 2;
-    font-weight: 400;
-    align-items: center;
-    font-size: var(--font-st);
-    margin-top: 10px;
-    img {
-      width: 24px;
-      margin-right: 5px;
-    }
-    a {
-      font-weight: 600;
-      margin-left: 5px;
-      color: black;
+    span {
+      display: flex;
+      align-items: center;
+      margin: 15px 10px;
+      img {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+      }
     }
   }
 
   .header-info__socials {
-    grid-column: 2 / 3;
-    grid-row: 2 / 5;
     span {
+      display: flex;
       align-items: center;
-      justify-content: flex-start;
-      word-break: break-all;
-      margin-top: 10px;
-      font-size: var(--font-st);
-      font-weight: 400;
-      a {
-        font-weight: 400;
-        color: black;
-      }
-      img {
-        width: 24px;
-        height: 24px;
-        margin-right: 5px;
-      }
+      margin: 15px 10px;
+    }
+
+    img {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
     }
   }
+}
+.studio-profile__rooms {
+  grid-area: rooms;
+}
+.add-room {
+  width: 100%;
+  border: none;
+  background-color: rgb(185, 185, 185);
+  padding: 10px 0;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--col-lgrey);
+  }
+}
+.room {
+  position: relative;
+}
+.map {
+  grid-area: map;
+  height: 350px;
+  div {
+    width: 100%;
+    height: 100%;
+  }
+}
+.description {
+  grid-area: desc;
+  padding: 30px;
   h2 {
     font-size: var(--font-h2);
     font-weight: 600;
-  }
-
-  .description {
-    position: relative;
-    background-color: white;
-    border-radius: 10px;
-    padding: 30px;
     margin-bottom: 20px;
-
-    p {
-      margin-top: 20px;
-      font-size: var(--font-lst);
-      white-space: pre-line;
-      word-wrap: break-word;
+  }
+  p {
+    white-space: pre-line;
+  }
+}
+@media (min-width: 768px) {
+  .studio-profile {
+    margin: 0 auto;
+    width: 80vw;
+  }
+  .studio-profile__header-banner {
+    img {
+      height: 150px;
+    }
+    .logo {
+      width: 75px;
+      height: 75px;
+      top: 100px;
+      left: 30px;
+      border-radius: 50%;
+      background-color: white;
+      border: 3px white solid;
     }
   }
+}
 
-  .studio-profile__rooms {
-    margin-left: 30px;
-    background-color: white;
-    width: 20vw;
-    height: 420px;
-    border-radius: 10px;
-    overflow: hidden;
+@media (min-width: 1025px) {
+  .studio-profile {
+    width: 100vw;
+    display: grid;
+    grid-template-columns: 800px 20%;
+    justify-content: center;
+    grid-template-rows: 15px minmax(520px, min-content) 380px 400px auto;
+    grid-template-areas: 'notice .' 'header rooms' 'map rooms' 'desc rooms' '. rooms';
+    column-gap: 30px;
+  }
+  .studio-profile__header-banner {
+    img {
+      height: 200px;
+    }
 
-    .add-button {
+    .logo {
+      width: 120px;
+      height: 120px;
+      top: 125px;
+    }
+  }
+  .studio-profile__header-info {
+    display: flex;
+    flex-wrap: wrap;
+
+    .header-info__name {
       width: 100%;
-      border: none;
-      background-color: rgb(224, 224, 224);
-      padding: 20px 0 10px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-weight: 600;
+    }
 
-      &:hover {
-        background-color: var(--col-grey);
-      }
-      svg {
-        margin-top: 5px;
-      }
+    .header-info__contacts {
+      width: 50%;
+    }
+
+    .header-info__socials {
+      width: 50%;
     }
   }
 }

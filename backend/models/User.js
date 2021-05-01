@@ -1,6 +1,9 @@
 const { ObjectID } = require('mongodb');
-const { nanoid } = require('nanoid');
+const { customAlphabet } = require('nanoid');
 const slugify = require('slugify');
+
+const abet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const nanoid = customAlphabet(abet, 5);
 
 //* Connect to the STUDIOS Collection
 let users = null;
@@ -31,7 +34,7 @@ class User {
     //* in case user registered via google and have not username and password
     if (!userInfo.username) {
       userInfo.username = slugify(
-        `${userInfo.firstName} ${userInfo.lastName} ${nanoid(5)}`,
+        `${userInfo.firstName} ${userInfo.lastName} ${nanoid()}`,
         {
           replacement: '_',
           remove: undefined,

@@ -27,10 +27,12 @@
     </div>
     <div class="basic-form__block">
       <label for="roomDesc">Описание зала</label>
+      <span class="basic-form__warning">📌 Максимально 500 символов</span>
       <textarea
         id="roomDesc"
         rows="7"
         v-model.lazy="room.description"
+        maxlength="500"
       ></textarea>
     </div>
     <div class="basic-form__block">
@@ -90,7 +92,6 @@ export default {
       const action = this.room._id ? 'room/updateRoom' : 'room/createRoom';
       const form = new FormData();
       this.room.studioRooms = this.studio.rooms.map((room) => room._id);
-      console.log(this.room.studioRooms);
       const room = JSON.stringify(this.room);
       form.append('room', room);
       this.newPhotos.forEach((file) => {

@@ -21,7 +21,7 @@ router
     imgUploader.array('photos', 4),
     imageUploader('banner', 'studiosBanners', {
       isUniqueName: true,
-      width: 880,
+      width: 800,
       height: 200,
     }),
     studioController.updateStudio,

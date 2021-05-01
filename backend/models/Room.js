@@ -47,36 +47,31 @@ class Room {
   //   return studios.findOne(filter, { projection });
   // }
 
-  // /**
-  //  * @param {object} query - Object with id for Studio searching
-  //  * @param {string} query._id - required
-  //  * @param {object} dataToUpdate - object of fields to update
-  //  * @returns {Studio} updated studio
-  //  */
-  // static async updateStudio(query, dataToUpdate) {
-  //   const filter = { _id: ObjectID(query) };
-  //   const updatedData = { ...dataToUpdate };
+  /**
+   * @param {object} query - Object with id for Room searching
+   * @param {string} query._id - required
+   * @param {object} dataToUpdate - object of fields to update
+   * @returns {Room} updated Room
+   */
+  static async updateRoom(query, dataToUpdate) {
+    const filter = { _id: ObjectID(query) };
+    const updatedData = { ...dataToUpdate };
 
-  //   //* generate slug for the studio
-  //   if (updatedData.name && updatedData.slug) {
-  //     updatedData.slug = slugify(updatedData.name, { lower: true });
-  //   }
+    const options = {
+      bypassDocumentValidation: true,
+      projection: {
+        createdAt: 0,
+        updatedAt: 0,
+      },
+      returnOriginal: false,
+      ignoreUndefined: true,
+    };
+    const atomData = {
+      $set: updatedData,
+    };
 
-  //   const options = {
-  //     bypassDocumentValidation: true,
-  //     projection: {
-  //       createdAt: 0,
-  //       updatedAt: 0,
-  //     },
-  //     returnOriginal: false,
-  //     ignoreUndefined: true,
-  //   };
-  //   const atomData = {
-  //     $set: updatedData,
-  //   };
-
-  //   return studios.findOneAndUpdate(filter, atomData, options);
-  // }
+    return rooms.findOneAndUpdate(filter, atomData, options);
+  }
 }
 
 module.exports = Room;

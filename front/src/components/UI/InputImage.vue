@@ -142,6 +142,7 @@ input {
     display: flex;
     margin: 5px;
     align-items: center;
+    overflow: hidden;
     position: relative;
 
     span {

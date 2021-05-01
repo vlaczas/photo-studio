@@ -7,4 +7,11 @@ export default {
     context.commit('addRoom', response.data.data);
     return response;
   },
+
+  async updateRoom(context, roomForm) {
+    const response = await myAxios.put('/rooms', roomForm);
+
+    context.commit('updateRoom', response.data.data);
+    return response;
+  },
 };

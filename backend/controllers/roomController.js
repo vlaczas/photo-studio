@@ -1,7 +1,7 @@
 const { ObjectID } = require('mongodb');
 const Room = require('../models/Room');
 const Studio = require('../models/Studio');
-// const ErrorResponse = require('../utils/errorResponse');
+const ErrorResponse = require('../utils/errorResponse');
 
 class RoomController {
   /**
@@ -18,7 +18,7 @@ class RoomController {
       }
       delete dataToUpdate.errorUploads;
 
-      roomInfo.photos = [...roomInfo.photos, ...dataToUpdate.photos];
+      roomInfo.photos = dataToUpdate.photos;
       dataToUpdate = { ...dataToUpdate, ...roomInfo };
       dataToUpdate.owner = req.session.user._id;
       dataToUpdate.studio = req.session.user.studio;
@@ -49,6 +49,43 @@ class RoomController {
         data: newRoom,
         errorUploads,
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+  @desc Update a room via body - can contain .file
+   */
+  static async updateRoom(req, res, next) {
+    try {
+      const roomInfo = JSON.parse(req.body.room);
+
+      if (roomInfo.owner !== req.session.user._id) {
+        return next(new ErrorResponse('Forbidden', 403));
+      }
+      roomInfo.photos = [...roomInfo.photos, ...req.body.photos];
+
+      let errorUploads;
+      if (req.body.errorUploads) {
+        errorUploads = req.body.errorUploads;
+      }
+
+      // add only save fields
+      const dataToUpdate = {
+        photos: roomInfo.photos,
+        name: roomInfo.name,
+        price: roomInfo.price,
+        tags: roomInfo.tags,
+        description: roomInfo.description,
+      };
+
+      const { value: updatedRoom } = await Room.updateRoom(
+        roomInfo._id,
+        dataToUpdate,
+      );
+
+      res.status(200).json({ success: true, data: updatedRoom, errorUploads });
     } catch (error) {
       next(error);
     }
