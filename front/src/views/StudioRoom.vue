@@ -10,7 +10,7 @@
           <h1>{{ room.studio[0].name }}</h1>
         </router-link>
         <div class="room-info">
-          <room-preview :room="room" :imgSize="imgSize"></room-preview>
+          <room-preview :room="room"></room-preview>
         </div>
       </div>
     </section>
@@ -28,14 +28,6 @@ export default {
       room: {},
     };
   },
-  computed: {
-    imgSize() {
-      if (window.innerWidth < 768) return '100%';
-      if (window.innerWidth < 1023) return '33.33333%';
-      return '20%';
-    },
-  },
-
   created() {
     /* eslint-disable */
     this.$store

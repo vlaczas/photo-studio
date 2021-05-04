@@ -28,6 +28,10 @@
               <input type="checkbox" id="box2" />
               <label for="box2">Дневной свет</label>
             </div>
+            <div>
+              <input type="checkbox" id="box3" />
+              <label for="box3">Столы</label>
+            </div>
           </div>
           <div class="footer">
             <button class="bold-btn">Сбросить</button>
@@ -35,16 +39,19 @@
           </div>
         </div>
       </div>
-      <div>;dsjfkjfdsk</div>
+      <div>
+        <search-output></search-output>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
 import Search from '@/components/search/Search.vue';
+import SearchOutput from '../components/search/SearchOutput.vue';
 
 export default {
-  components: { Search },
+  components: { Search, SearchOutput },
   data() {
     return {
       openFilter: false,
@@ -147,8 +154,9 @@ strong {
   .filters {
     position: static;
     width: max(300px, 20vw);
-    margin-right: 50px;
+    margin-right: 25px;
     border-radius: 15px;
+    height: min-content;
 
     & > div {
       height: auto;

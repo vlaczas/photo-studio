@@ -1,8 +1,18 @@
 <template>
   <div class="room">
-    <router-link :to="{ name: 'StudioRoom', params: { roomId: room._id } }">
-      <h2 class="room-name">{{ room.name }}</h2>
-    </router-link>
+    <div class="room-head">
+      <router-link
+        :to="{
+          name: 'StudioRoom',
+          params: { roomId: room._id, slug: studioSlug },
+        }"
+      >
+        <h2 class="room-name">{{ room.name }}</h2>
+      </router-link>
+      <figure class="bookmarked" v-if="isLoggedIn" @click="doBookmarked">
+        <img :src="'img/bookmarked_m.png'" />
+      </figure>
+    </div>
     <p class="room-desc">{{ room.description }}</p>
     <span class="room-price"> {{ room.price }} грн/час </span>
     <div class="room-tags">
@@ -41,10 +51,9 @@ export default {
       type: Object,
       required: true,
     },
-    imgSize: {
+    studioSlug: {
       type: String,
       required: false,
-      default: '20%',
     },
   },
   data() {
@@ -52,11 +61,10 @@ export default {
       index: null,
     };
   },
-  mounted() {
-    /* eslint-disable */
-    document
-      .querySelectorAll('.thumb')
-      .forEach((elem) => (elem.style.width = this.imgSize));
+  computed: {
+    isLoggedIn() {
+      return this.$store.getters['auth/getUserStatus'];
+    },
   },
 };
 </script>
@@ -65,11 +73,34 @@ export default {
 .room {
   width: 100%;
   padding: 15px;
+
+  .room-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .bookmarked {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    img {
+      width: 30px;
+      margin: 0;
+    }
+  }
+}
+a {
+  width: fit-content;
 }
 .room-name {
   font-size: var(--font-h2);
   font-weight: 600;
-  margin-bottom: 20px;
   width: fit-content;
 }
 .room-desc {
@@ -106,6 +137,7 @@ export default {
   background-color: var(--col-lgrey);
 
   .thumb {
+    width: 20%;
     aspect-ratio: 1 / 1;
     cursor: pointer;
     overflow: hidden;

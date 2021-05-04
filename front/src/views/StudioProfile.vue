@@ -176,7 +176,7 @@
               ></path>
             </svg>
           </button>
-          <room-preview :room="room"></room-preview>
+          <room-preview :room="room" :studioSlug="studio.slug"></room-preview>
         </div>
       </div>
       <div class="description">
