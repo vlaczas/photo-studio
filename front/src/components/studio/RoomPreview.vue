@@ -1,6 +1,8 @@
 <template>
   <div class="room">
-    <h2 class="room-name">{{ room.name }}</h2>
+    <router-link :to="{ name: 'StudioRoom', params: { roomId: room._id } }">
+      <h2 class="room-name">{{ room.name }}</h2>
+    </router-link>
     <p class="room-desc">{{ room.description }}</p>
     <span class="room-price"> {{ room.price }} грн/час </span>
     <div class="room-tags">
@@ -8,11 +10,11 @@
         tag
       }}</span>
     </div>
-    <div class="trumb-gallery">
+    <div class="thumb-gallery">
       <figure
         v-for="(img, idx) in room.photos"
         :key="idx"
-        class="trumb"
+        class="thumb"
         @click="index = idx"
       >
         <img :src="img" />
@@ -39,11 +41,22 @@ export default {
       type: Object,
       required: true,
     },
+    imgSize: {
+      type: String,
+      required: false,
+      default: '20%',
+    },
   },
   data() {
     return {
       index: null,
     };
+  },
+  mounted() {
+    /* eslint-disable */
+    document
+      .querySelectorAll('.thumb')
+      .forEach((elem) => (elem.style.width = this.imgSize));
   },
 };
 </script>
@@ -52,12 +65,12 @@ export default {
 .room {
   width: 100%;
   padding: 15px;
-  border-top: 1px black solid;
 }
 .room-name {
   font-size: var(--font-h2);
   font-weight: 600;
   margin-bottom: 20px;
+  width: fit-content;
 }
 .room-desc {
   margin-bottom: 20px;
@@ -87,13 +100,12 @@ export default {
   width: fit-content;
   background-color: var(--col-fio);
 }
-.trumb-gallery {
+.thumb-gallery {
   display: flex;
   flex-wrap: wrap;
   background-color: var(--col-lgrey);
 
-  .trumb {
-    width: 20%;
+  .thumb {
     aspect-ratio: 1 / 1;
     cursor: pointer;
     overflow: hidden;

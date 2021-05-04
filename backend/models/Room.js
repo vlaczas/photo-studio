@@ -27,25 +27,37 @@ class Room {
     return rooms.insertOne(roomInfo);
   }
 
-  // /**
-  //  *
-  //  * @param {Object} query - Object with id of the studio or owner Id for Studio searching
-  //  * @param {string} query.owner - required or
-  //  * @param {string} query._id - required
-  //  * @returns {Object} found studio
-  //  */
+  /**
+   *
+   * @param {string} query - string with id of the room
+   * @returns {Object} found studio
+   */
 
-  // static async getStudio(query) {
-  //   const filter = { ...query };
-  //   if (query._id) filter._id = ObjectID(query._id);
-  //   else if (query.owner) filter.owner = ObjectID(query.owner);
+  static async getRoom(query) {
+    const filter = ObjectID(query);
 
-  //   const projection = {
-  //     createdAt: 0,
-  //     updatedAt: 0,
-  //   };
-  //   return studios.findOne(filter, { projection });
-  // }
+    return rooms.aggregate([
+      {
+        $match: {
+          _id: filter,
+        },
+      },
+      {
+        $lookup: {
+          from: 'studios',
+          localField: '_id',
+          foreignField: 'rooms',
+          as: 'studio',
+        },
+      },
+      {
+        $project: {
+          createdAt: 0,
+          updatedAt: 0,
+        },
+      },
+    ]);
+  }
 
   /**
    * @param {object} query - Object with id for Room searching

@@ -90,6 +90,26 @@ class RoomController {
       next(error);
     }
   }
+
+  /**
+  @desc Get a room via query
+   */
+  static async getSingleRoom(req, res, next) {
+    try {
+      const query = req.query._id;
+
+      const room = await Room.getRoom(query);
+      const [roomData] = await room.toArray();
+
+      if (!roomData) {
+        return next(new ErrorResponse('Undefined', 404));
+      }
+
+      res.status(200).json({ success: true, data: roomData });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = RoomController;

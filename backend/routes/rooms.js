@@ -29,6 +29,7 @@ router
       crop: 'pad',
     }),
     roomController.updateRoom,
-  );
+  )
+  .get(roomController.getSingleRoom);
 
 module.exports = router;

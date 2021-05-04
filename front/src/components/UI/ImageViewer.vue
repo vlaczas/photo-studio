@@ -75,11 +75,18 @@ export default {
 @media (min-width: 768px) {
   .img-viewer {
     .current-img {
-      width: 70vw;
+      width: 65vw;
     }
   }
 }
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
+  .img-viewer {
+    .current-img {
+      width: 35vw;
+    }
+  }
+}
+@media (min-width: 1441px) {
   .img-viewer {
     .current-img {
       width: 25vw;

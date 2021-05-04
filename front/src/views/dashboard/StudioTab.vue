@@ -146,54 +146,18 @@ export default {
     },
   },
   mounted() {
-    const input = this.$refs.address;
     /* eslint-disable no-undef */
-    // this is a center of Kharkiv
-    const center = { lat: 49.989867, lng: 36.25731 };
-    // rect 10km
-    const defaultBounds = {
-      north: center.lat + 0.1,
-      south: center.lat - 0.1,
-      east: center.lng + 0.1,
-      west: center.lng - 0.1,
-    };
-    const options = {
-      bounds: defaultBounds,
-      componentRestrictions: { country: 'ua' },
-      fields: [
-        'geometry',
-        'international_phone_number',
-        'name',
-        'place_id',
-        'formatted_address',
-        'website',
-        'types',
-      ],
-      origin: center,
-      strictBounds: true,
-    };
-
-    const initAutocomplete = () => {
-      window.autocomplete = new google.maps.places.Autocomplete(input, options);
-      window.autocomplete.addListener('place_changed', () => {
-        const place = window.autocomplete.getPlace();
-        if (!place.geometry) {
-          showNotification('Выберите правильный адрес студии 🚧');
-        } else {
-          this.fillOutFields(place);
-        }
-      });
-    };
-
-    if (!document.getElementById('maps')) {
-      const GMapsScript = document.createElement('script');
-      GMapsScript.id = 'maps';
-      GMapsScript.src =
-        'https://maps.googleapis.com/maps/api/js?key=AIzaSyAETvDj_QtUBYl45XJZGza56rNkiGQtaMI&libraries=places&region=UA&language=ru';
-      document.head.append(GMapsScript);
-
-      GMapsScript.onload = () => initAutocomplete();
-    } else initAutocomplete();
+    if (window.google.maps) {
+      this.initAutocomplete();
+    } else {
+      window.initMap = this.initAutocomplete;
+      const mapScript = document.createElement('script');
+      mapScript.src =
+        'https://maps.googleapis.com/maps/api/js?key=AIzaSyAETvDj_QtUBYl45XJZGza56rNkiGQtaMI&libraries=places&region=UA&language=ru&map_ids=fa727c701462337e&callback=initMap';
+      mapScript.async = true;
+      mapScript.id = 'mapScript';
+      document.body.append(mapScript);
+    }
   },
   created() {
     this.user = this.$store.getters['auth/getUser'];
@@ -207,6 +171,43 @@ export default {
     }
   },
   methods: {
+    initAutocomplete() {
+      const input = this.$refs.address;
+      // this is a center of Kharkiv
+      const center = { lat: 49.989867, lng: 36.25731 };
+      // rect 10km
+      const defaultBounds = {
+        north: center.lat + 0.1,
+        south: center.lat - 0.1,
+        east: center.lng + 0.1,
+        west: center.lng - 0.1,
+      };
+      const options = {
+        bounds: defaultBounds,
+        componentRestrictions: { country: 'ua' },
+        fields: [
+          'geometry',
+          'international_phone_number',
+          'name',
+          'place_id',
+          'formatted_address',
+          'website',
+          'types',
+        ],
+        origin: center,
+        strictBounds: true,
+      };
+      const autocomplete = new google.maps.places.Autocomplete(input, options);
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) {
+          showNotification('Выберите правильный адрес студии 🚧');
+        } else {
+          console.log(place);
+          this.fillOutFields(place);
+        }
+      });
+    },
     updateLogo() {
       this.openPhotoDown = false;
       this.studio = this.$store.getters['studio/getStudio'];

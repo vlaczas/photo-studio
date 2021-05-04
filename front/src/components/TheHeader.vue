@@ -5,7 +5,6 @@
         P&S
       </span></router-link
     >
-
     <router-link v-if="getUserStatus === false" :to="{ name: 'LoginForm' }">
       <base-button>Вход</base-button>
     </router-link>
@@ -73,5 +72,14 @@ header {
     cursor: pointer;
     color: black;
   }
+}
+
+#googleAuth {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  width: 400px;
+  height: 200px;
+  background-color: violet;
 }
 </style>

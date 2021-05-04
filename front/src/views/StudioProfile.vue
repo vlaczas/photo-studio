@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="container">
     <spinner v-if="!studio._id"></spinner>
     <section class="studio-profile" v-else>
       <span v-if="isOwner"
@@ -92,7 +92,7 @@
               ></span
             >
             <span v-if="studio.contacts.addPhone">
-              <img src="@/assets/images/phone.png" />Доптелефон:
+              <img src="@/assets/images/phone.png" />Доп. телефон:
               <a :href="'tel:' + studio.contacts.addPhone">
                 {{ studio.contacts.addPhone }}</a
               >
@@ -134,7 +134,7 @@
         </div>
       </div>
       <div class="map">
-        <div ref="Gmap"></div>
+        <div id="Gmap"></div>
       </div>
       <div class="studio-profile__rooms">
         <button v-if="isOwner" class="add-room" @click="openRoomForm(false)">
@@ -153,10 +153,7 @@
           </svg>
         </button>
         <base-modal @close-modal="roomForm = false" :open="roomForm">
-          <room-form
-            @close-modal="roomForm = false"
-            :roomToChange="roomToChange"
-          ></room-form>
+          <room-form :roomToChange="roomToChange"></room-form>
         </base-modal>
         <div class="room" v-for="(room, idx) in studio.rooms" :key="room">
           <button
@@ -291,34 +288,40 @@ export default {
           showNotification('Что-то пошло не так 🤷‍♂️');
         });
     },
-    initMap() {
+    checkMap() {
       /* eslint-disable */
-      this.$nextTick(() => {
-        const mapElem = this.$refs.Gmap;
+      if (window.google.maps) {
+        this.initMap();
+      } else {
+        window.initMap = this.initMap;
         const mapScript = document.createElement('script');
         mapScript.src =
-          'https://maps.googleapis.com/maps/api/js?key=AIzaSyAETvDj_QtUBYl45XJZGza56rNkiGQtaMI&map_ids=fa727c701462337e';
+          'https://maps.googleapis.com/maps/api/js?key=AIzaSyAETvDj_QtUBYl45XJZGza56rNkiGQtaMI&libraries=places&region=UA&language=ru&map_ids=fa727c701462337e&callback=initMap';
         mapScript.async = true;
         mapScript.id = 'mapScript';
         document.body.append(mapScript);
-        mapScript.onload = () => {
-          window.map = new google.maps.Map(mapElem, {
-            center: {
-              lat: this.studio.address.location.location[0],
-              lng: this.studio.address.location.location[1],
-            },
-            zoom: 15,
-            mapId: 'fa727c701462337e',
-          });
-          const marker = new google.maps.Marker({
-            position: {
-              lat: this.studio.address.location.location[0],
-              lng: this.studio.address.location.location[1],
-            },
-            map: window.map,
-            animation: google.maps.Animation.DROP,
-          });
-        };
+      }
+    },
+    initMap() {
+      /* eslint-disable */
+      this.$nextTick(() => {
+        const mapElem = document.querySelector('#Gmap');
+        const map = new window.google.maps.Map(mapElem, {
+          center: {
+            lat: this.studio.address.location.location[0],
+            lng: this.studio.address.location.location[1],
+          },
+          zoom: 15,
+          mapId: 'fa727c701462337e',
+        });
+        const marker = new window.google.maps.Marker({
+          position: {
+            lat: this.studio.address.location.location[0],
+            lng: this.studio.address.location.location[1],
+          },
+          map,
+          animation: window.google.maps.Animation.DROP,
+        });
       });
     },
     openRoomForm(idx) {
@@ -345,11 +348,11 @@ export default {
       .dispatch('studio/getSingleStudio', this.$route.params)
       .then((res) => {
         this.studio = res.data.data;
+        this.checkMap();
         if (this.studio._id === this.user?.studio) {
           this.isOwner = true;
           this.$store.commit('studio/setOwnerStudio', this.studio);
         }
-        this.initMap();
       })
       .catch((res) => console.log(res.data.error));
   },
@@ -371,6 +374,17 @@ export default {
 
   &:hover {
     background-color: var(--col-white);
+  }
+}
+
+.container {
+  min-height: calc(100vh - 88px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & > div {
+    transform: scale(2);
   }
 }
 .studio-profile {
@@ -472,9 +486,8 @@ export default {
 }
 .map {
   grid-area: map;
-  height: 350px;
-  div {
-    width: 100%;
+  height: 450px;
+  #Gmap {
     height: 100%;
   }
 }
@@ -517,7 +530,7 @@ export default {
     display: grid;
     grid-template-columns: 800px 20%;
     justify-content: center;
-    grid-template-rows: 15px minmax(520px, min-content) 380px 400px auto;
+    grid-template-rows: 15px minmax(520px, min-content) 480px 400px auto;
     grid-template-areas: 'notice .' 'header rooms' 'map rooms' 'desc rooms' '. rooms';
     column-gap: 30px;
   }

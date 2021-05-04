@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store/index';
 import Home from '../views/Home.vue';
 import LoginForm from '../views/LoginForm.vue';
+import SearchPage from '../views/SearchPage.vue';
 
 /* eslint-disable*/
 const routes = [
@@ -10,6 +11,11 @@ const routes = [
     name: 'Home',
     component: Home,
     children: [
+      {
+        path: '',
+        name: 'SearchPage',
+        component: SearchPage,
+      },
       {
         path: 'login',
         name: 'LoginForm',
@@ -29,6 +35,14 @@ const routes = [
         component: () =>
           import(
             /* webpackChunkName: "studioProfile" */ '../views/StudioProfile.vue'
+          ),
+      },
+      {
+        path: 'studios/:slug/:roomId',
+        name: 'StudioRoom',
+        component: () =>
+          import(
+            /* webpackChunkName: "studioRoom" */ '../views/StudioRoom.vue'
           ),
       },
     ],

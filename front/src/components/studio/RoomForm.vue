@@ -65,7 +65,6 @@ import InputImage from '../UI/InputImage.vue';
 
 export default {
   components: { InputImage },
-  emits: ['close-modal'],
   props: {
     roomToChange: {
       type: Object,
@@ -100,9 +99,11 @@ export default {
 
       this.$store
         .dispatch(action, form)
-        .then(() => {
-          showNotification('Сохранено ✅');
-          this.$emit('close-modal');
+        .then((res) => {
+          this.$router.push({
+            name: 'StudioRoom',
+            params: { roomId: res.data.data._id },
+          });
         })
         .catch(() => {
           showNotification('Что-то пошло не так 🤷‍♂️');

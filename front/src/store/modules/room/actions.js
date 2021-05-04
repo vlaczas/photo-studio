@@ -14,4 +14,10 @@ export default {
     context.commit('updateRoom', response.data.data);
     return response;
   },
+
+  async getRoom(context, roomId) {
+    const response = await myAxios.get(`/rooms?_id=${roomId}`);
+
+    return response;
+  },
 };

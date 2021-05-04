@@ -52,6 +52,7 @@ h1 {
   position: absolute;
   top: -12px;
   right: -7px;
+  text-align: center;
   background-color: var(--col-deepBlue);
   user-select: none;
   cursor: pointer;
@@ -59,6 +60,18 @@ h1 {
   border-radius: 50%;
   width: 35px;
   padding: 5px;
+}
+
+.bold-btn {
+  display: block;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 800;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .focus-ring {
